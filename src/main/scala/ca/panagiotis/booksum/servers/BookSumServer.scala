@@ -1,0 +1,22 @@
+package ca.panagiotis.booksum.servers
+
+import com.panagiotis.booksum.controllers.HomeController
+import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finatra.http.HttpServer
+import com.twitter.finatra.http.filters.{CommonFilters, LoggingMDCFilter, TraceIdMDCFilter}
+import com.twitter.finatra.http.routing.HttpRouter
+
+object BookSumServerMain extends BookSumServer
+
+/**
+  * Created by panagiotis on 22/04/17.
+  */
+class BookSumServer extends HttpServer {
+  override def configureHttp(router: HttpRouter): Unit = {
+    router
+      .filter[LoggingMDCFilter[Request, Response]]
+      .filter[TraceIdMDCFilter[Request, Response]]
+      .filter[CommonFilters]
+      .add[HomeController]
+  }
+}
