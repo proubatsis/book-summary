@@ -14,12 +14,6 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
   import ctx._
 
   override def findBooks(): Future[Seq[Book]] = {
-    val r = ctx.transaction {
-      ctx.run(query[Book])
-    }
-
-    for {
-      book <- r
-    } yield book
+    ctx.run(query[Book])
   }
 }
