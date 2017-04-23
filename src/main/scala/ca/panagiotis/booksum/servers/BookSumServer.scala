@@ -1,6 +1,6 @@
 package ca.panagiotis.booksum.servers
 
-import com.panagiotis.booksum.controllers.HomeController
+import ca.panagiotis.booksum.controllers.HomeController
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finatra.http.HttpServer
 import com.twitter.finatra.http.filters.{CommonFilters, LoggingMDCFilter, TraceIdMDCFilter}
