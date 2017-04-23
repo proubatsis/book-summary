@@ -1,6 +1,6 @@
 package ca.panagiotis.booksum.servers
 
-import ca.panagiotis.booksum.controllers.HomeController
+import ca.panagiotis.booksum.controllers.{BookController, HomeController}
 import ca.panagiotis.booksum.modules.ServiceModule
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finatra.http.HttpServer
@@ -21,5 +21,6 @@ class BookSumServer extends HttpServer {
       .filter[TraceIdMDCFilter[Request, Response]]
       .filter[CommonFilters]
       .add[HomeController]
+      .add[BookController]
   }
 }

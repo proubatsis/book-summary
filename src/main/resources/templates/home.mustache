@@ -1,10 +1,17 @@
 <html>
     <body>
         <h1>{{ title }}</h1>
-        <ul>
+        <table>
+            <tr>
+                <td>Title</td>
+                <td>Author</td>
+            </tr>
             {{#books}}
-                <li>{{ title }}</li>
+            <tr>
+                <td>{{ title }}</td>
+                <td>{{ author }}</td>
+            </tr>
             {{/books}}
-        </ul>
+        </table>
     </body>
 </html>
