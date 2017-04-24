@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import ca.panagiotis.booksum.controllers.requests.BookGetRequest
 import ca.panagiotis.booksum.services.BookService
-import ca.panagiotis.booksum.views.BookSummaryView
+import ca.panagiotis.booksum.views.{BookSummaryView, NotFoundView}
 import com.twitter.finatra.http.Controller
 
 /**
@@ -17,7 +17,7 @@ class BookController @Inject() (bookService: BookService) extends Controller {
     } yield {
       result match {
         case Some((b, s)) => BookSummaryView(b.title, b.author, b.description, s)
-        case None => response.notFound("Not found!")
+        case None => response.notFound(NotFoundView(s"Book: ${request.id}"))
       }
     }
   }
