@@ -28,6 +28,12 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     for {
       results <- ctx.run(q)
       (books, summaries) = results.unzip
-    } yield (books.head, summaries)
+      book = books.headOption
+    } yield {
+      book match {
+        case Some(b) => Some((b, summaries))
+        case None => None
+      }
+    }
   }
 }

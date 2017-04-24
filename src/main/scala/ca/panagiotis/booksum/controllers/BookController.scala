@@ -13,8 +13,12 @@ import com.twitter.finatra.http.Controller
 class BookController @Inject() (bookService: BookService) extends Controller {
   get("/books/:id") { request: BookGetRequest =>
     for {
-      (b, s) <- bookService.findBookSummary(request.id)
-      view = BookSummaryView(b.title, b.author, b.description, s)
-    } yield view
+      result <- bookService.findBookSummary(request.id)
+    } yield {
+      result match {
+        case Some((b, s)) => BookSummaryView(b.title, b.author, b.description, s)
+        case None => response.notFound("Not found!")
+      }
+    }
   }
 }
