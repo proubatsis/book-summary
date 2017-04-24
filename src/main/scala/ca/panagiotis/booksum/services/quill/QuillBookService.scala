@@ -26,9 +26,8 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     }
 
     for {
-      (books, summaries) <- for {
-        results <- ctx.run(q)
-      } yield results.unzip
+      results <- ctx.run(q)
+      (books, summaries) = results.unzip
     } yield (books.head, summaries)
   }
 }
