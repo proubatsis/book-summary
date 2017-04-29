@@ -1,0 +1,26 @@
+{
+  "name": "books-summary-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proubatsis/book-summary.git"
+  },
+  "author": "Panagiotis Roubatsis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/proubatsis/book-summary/issues"
+  },
+  "homepage": "https://github.com/proubatsis/book-summary#readme",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-mustache": "^2.3.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-tap": "^0.4.2"
+  }
+}

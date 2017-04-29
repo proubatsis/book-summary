@@ -1,0 +1,13 @@
+{
+  "title": "Welcome to the website",
+  "books": [
+    {
+      "title": "Harry Potter and the Goblet of Fire",
+      "author": "JK Rowling"
+    },
+    {
+      "title": "Wizard's Second Rule",
+      "author": "Terry Goodkind"
+    }
+  ]
+}
