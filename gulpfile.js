@@ -3,6 +3,7 @@ const connect = require("gulp-connect");
 const mustache = require("gulp-mustache");
 const tap = require("gulp-tap");
 const rename = require("gulp-rename");
+const sass = require("gulp-sass");
 const path = require("path");
 
 const CLIENT_DEST = "client/dest";
@@ -21,11 +22,24 @@ gulp.task("templates", function() {
         .pipe(connect.reload());
 });
 
-gulp.task("dev", ["templates"], function() {
+gulp.task("sass", function() {
+    return gulp.src("client/sass/*.scss")
+        .pipe(sass())
+        .pipe(gulp.dest(path.join(CLIENT_DEST, "styles")))
+        .pipe(connect.reload());
+});
+
+gulp.task("bootstrap", function() {
+    return gulp.src("node_modules/bootstrap/dist/css/bootstrap.min.css")
+        .pipe(gulp.dest(path.join(CLIENT_DEST, "styles")));
+});
+
+gulp.task("dev", ["templates", "sass", "bootstrap"], function() {
     connect.server({
         root: CLIENT_DEST,
         livereload: true
     });
 
     gulp.watch(["src/main/resources/templates/*.mustache", "client/dev-data/*.json"], ["templates"]);
+    gulp.watch("client/sass/*.scss", ["sass"]);
 });

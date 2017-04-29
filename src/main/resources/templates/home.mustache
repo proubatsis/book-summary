@@ -1,17 +1,26 @@
 <html>
+    <head>
+        <title>Book Summary</title>
+        {{>common}}
+        <link type="text/css" rel="stylesheet" href="/styles/home.css">
+    </head>
+
     <body>
-        <h1>{{ title }}</h1>
-        <table>
-            <tr>
-                <td>Title</td>
-                <td>Author</td>
-            </tr>
+        <div class="jumbotron">
+            <h1>{{ title }}</h1>
+        </div>
+
+        <div class="container-fluid">
             {{#books}}
-            <tr>
-                <td>{{ title }}</td>
-                <td>{{ author }}</td>
-            </tr>
+            <div class="panel row">
+                <div class="col-md-12 col-lg-10 col-lg-push-2">
+                    {{ title }} by {{ author }}
+                </div>
+                <div class="col-md-12 col-lg-2 col-lg-pull-10">
+                    <img class="book" src="{{ image }}"></img>
+                </div>
+            </div>
             {{/books}}
-        </table>
+        </div>
     </body>
 </html>

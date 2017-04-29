@@ -17,10 +17,12 @@
   },
   "homepage": "https://github.com/proubatsis/book-summary#readme",
   "dependencies": {
+    "bootstrap": "^3.3.7",
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
     "gulp-mustache": "^2.3.0",
     "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
     "gulp-tap": "^0.4.2"
   }
 }
