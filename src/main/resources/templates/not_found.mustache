@@ -1,6 +1,13 @@
 <html>
+    <head>
+        {{>common}}
+        <link rel="stylesheet" type="text/css" href="/styles/not_found.css">
+    </head>
     <body>
-        <h1>Not Found</h1>
-        <h2>{{ item }}, not found!</h2>
+        {{>navbar}}
+        <div class="container">
+            <h1>Not Found</h1>
+            <h2>{{ item }}, not found!</h2>
+        </div>
     </body>
 </html>
