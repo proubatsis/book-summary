@@ -1,3 +1,16 @@
-.navbar {
+.navbar-default {
     background: #2E3F47;
+    border-style: none;
+
+    .navbar-brand {
+        color: #fff;
+    }
+
+    .navbar-nav li a {
+        color: #fff;
+
+        &:hover {
+            color: #aaa;
+        }
+    }
 }
