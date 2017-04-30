@@ -1,12 +1,33 @@
 <html>
+    <head>
+        <title> {{ title }} </title>
+        {{>common}}
+        <link rel="stylesheet" type="text/css" href="/styles/book.css">
+    </head>
     <body>
-        <h1>{{ title }}</h1>
-        <h2>{{ author }}</h2>
-        <h2>Summaries</h2>
-        <ul>
+        {{>navbar}}
+        <div class="panel container">
+            <div class="row">
+                <div class="col-xs-6">
+                    <h1>{{ title }}</h1>
+                </div>
+                <div class="col-xs-6">
+                    <h2 class="book-author">{{ author }}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12"><h2>Summaries</h2></div>
+            </div>
             {{#summaries}}
-            <li>{{ summary }}</li>
+            <div class="row">
+                <div class="col-xs-12"><p class="summary-data">By USER on DATE</p></div>
+            </div>
+            <div class="summary row">
+                <div class="col-xs-12">
+                    <p>{{summary}}</p>
+                </div>
+            </div>
             {{/summaries}}
-        </ul>
+        </div>
     </body>
 </html>
