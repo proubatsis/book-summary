@@ -1,9 +1,12 @@
 version: "2"
 services:
-    psqldb:
+    db:
         image: "postgres"
         ports:
           - "5432:5432"
         env_file:
             - postgres.env
-
+    web:
+        build: ./web
+        ports:
+            - "80:80"
