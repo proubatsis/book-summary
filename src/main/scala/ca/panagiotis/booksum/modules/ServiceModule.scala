@@ -1,6 +1,7 @@
 package ca.panagiotis.booksum.modules
 
-import ca.panagiotis.booksum.services.BookService
+import ca.panagiotis.booksum.services.google.GoogleBookDataService
+import ca.panagiotis.booksum.services.{BookDataService, BookService}
 import ca.panagiotis.booksum.services.quill.QuillBookService
 import com.twitter.inject.TwitterModule
 import com.twitter.util.Future
@@ -13,5 +14,6 @@ object ServiceModule extends TwitterModule {
 
   override def configure(): Unit = {
     bind[BookService].to[QuillBookService]
+    bind[BookDataService].to[GoogleBookDataService]
   }
 }
