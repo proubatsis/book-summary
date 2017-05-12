@@ -1,7 +1,7 @@
-package ca.panagiotis.booksum.services
+package ca.panagiotis.booksum.services.google
 
 import com.twitter.finagle.Http
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.Request
 
 /**
   * Created by panagiotis on 09/05/17.
