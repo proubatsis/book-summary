@@ -13,6 +13,6 @@ case class GoogleBookDataVolumeInfo(
                                      industryIdentifiers: List[GoogleBookDataIsbn]
                                    )
 
-case class GoogleBookDataImageLinks(small: String, medium: String, large: String)
+case class GoogleBookDataImageLinks(thumbnail: Option[String], small: Option[String], medium: Option[String], large: Option[String])
 case class GoogleBookDataIsbn(identifier: String)
 case class GoogleBookDataSearchResults(totalItems: Int, items: List[GoogleBookData])

@@ -33,12 +33,13 @@ class GoogleBookDataService extends BookDataService{
     for {
       isbn <- b.volumeInfo.industryIdentifiers find (_.identifier.length() == 13)
       authors <- b.volumeInfo.authors
+      image <- (List(b.volumeInfo.imageLinks.medium, b.volumeInfo.imageLinks.small, b.volumeInfo.imageLinks.thumbnail) filter (_.isDefined)).head
     } yield BookData(
       b.id,
       b.volumeInfo.title,
       authors.mkString(","),
       b.volumeInfo.description,
-      b.volumeInfo.imageLinks.medium,
+      image,
       isbn.identifier
     )
   }
