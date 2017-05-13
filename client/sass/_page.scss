@@ -1,9 +1,23 @@
 @import "_navbar";
 
+$header-size: 16pt;
+
 body {
     background: #1A362A;
 }
 
 .panel {
     background: #fff;
+
+    h1 {
+        font-size: $header-size;
+    }
+
+    h2 {
+        font-size: $header-size;
+    }
+
+    h3 {
+        font-size: $header-size;
+    }
 }

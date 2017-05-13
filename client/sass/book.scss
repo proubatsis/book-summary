@@ -1,7 +1,5 @@
 @import "page";
 
-$header-size: 16pt;
-
 .summary {
     border-bottom: solid 1px;
 }
@@ -12,16 +10,4 @@ $header-size: 16pt;
 
 .book-author {
     text-align: right;
-}
-
-h1 {
-    font-size: $header-size;
-}
-
-h2 {
-    font-size: $header-size;
-}
-
-h3 {
-    font-size: $header-size;
 }
