@@ -2,9 +2,9 @@ package ca.panagiotis.booksum.controllers
 
 import javax.inject.Inject
 
-import ca.panagiotis.booksum.controllers.requests.BookGetRequest
+import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
-import ca.panagiotis.booksum.views.{BookDescriptionView, BookSummaryView, NotFoundView}
+import ca.panagiotis.booksum.views.{BookDescriptionView, BookSearchView, BookSummaryView, NotFoundView}
 import com.twitter.finatra.http.Controller
 
 /**
@@ -38,6 +38,16 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
           }
         }
       case None => response.badRequest()
+    }
+  }
+
+  get("/books/search") { request: BookSearchRequest =>
+    request.q match {
+      case Some(q) =>
+        for {
+          result <- bookDataService.searchBook(q)
+        } yield BookSearchView(q, result)
+      case None => BookSearchView("", List())
     }
   }
 }
