@@ -9,5 +9,6 @@ import com.twitter.finatra.request.RouteParam
 
 case class BookGetRequest(
                            request: Request,
-                           @RouteParam id: Int
+                           @RouteParam id: Option[Int],
+                           @RouteParam externalId: Option[String]
                          )
