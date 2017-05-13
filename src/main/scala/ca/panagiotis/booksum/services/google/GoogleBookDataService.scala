@@ -1,6 +1,5 @@
 package ca.panagiotis.booksum.services.google
 
-import ca.panagiotis.booksum.exceptions.IsbnException
 import ca.panagiotis.booksum.models.BookData
 import ca.panagiotis.booksum.models.google.{GoogleBookData, GoogleBookDataSearchResults}
 import ca.panagiotis.booksum.services.BookDataService
@@ -27,22 +26,20 @@ class GoogleBookDataService extends BookDataService{
     for {
       res <- GoogleApiClient.call("/books/v1/volumes", ("q", query))
       books = mapper.readValue[GoogleBookDataSearchResults](res.contentString)
-    } yield books.items.map(convertToBookData)
+    } yield books.items.flatMap(convertToBookData)
   }
 
-  private def convertToBookData(b: GoogleBookData): BookData = {
-    println(s"${b.id}: ${b.volumeInfo.title}")
-    b.volumeInfo.industryIdentifiers find (_.identifier.length() == 13) match {
-      case Some(x) =>
-        BookData(
-          b.id,
-          b.volumeInfo.title,
-          b.volumeInfo.authors.mkString(","),
-          b.volumeInfo.description,
-          b.volumeInfo.imageLinks.medium,
-          x.identifier
-        )
-      case _ => throw IsbnException("ISBN-13 not found!")
-    }
+  private def convertToBookData(b: GoogleBookData): Option[BookData] = {
+    for {
+      isbn <- b.volumeInfo.industryIdentifiers find (_.identifier.length() == 13)
+      authors <- b.volumeInfo.authors
+    } yield BookData(
+      b.id,
+      b.volumeInfo.title,
+      authors.mkString(","),
+      b.volumeInfo.description,
+      b.volumeInfo.imageLinks.medium,
+      isbn.identifier
+    )
   }
 }
