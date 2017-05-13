@@ -1,0 +1,15 @@
+@import "page";
+@import "globals";
+
+.book-author {
+    text-align: right;
+}
+
+@media (max-width: $break-max-sm) {
+    .sm-centered {
+        text-align: center;
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
+    }
+}

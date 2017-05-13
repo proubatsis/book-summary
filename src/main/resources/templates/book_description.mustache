@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title> {{ title }} </title>
+        {{>common}}
+        <link rel="stylesheet" type="text/css" href="/styles/book_description.css">
+    </head>
+    <body>
+        {{>navbar}}
+        <div class="panel container">
+            <div class="row">
+                <div class="col-xs-6">
+                    <h1>{{ title }}</h1>
+                </div>
+                <div class="col-xs-6">
+                    <h2 class="book-author">{{ author }}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <img class="img-responsive sm-centered" src="{{ image }}"></img>
+                </div>
+                <div class="col-xs-12 col-md-8">
+                    <div class="sm-centered">{{{ description }}}</div>
+                </div>
+            </div>
+    </body>
+</html>
