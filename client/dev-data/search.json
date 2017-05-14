@@ -2,12 +2,14 @@
   "q": "fantasy",
   "books": [
     {
+      "externalId": "abc",
       "title": "Harry Potter and the Goblet of Fire",
       "author": "JK Rowling",
       "imageUrl": "http://harrypotteraudiobooks.org/wp-content/uploads/2015/10/harry-potter-and-the-goblet-of-fire-free-audiobook-download.jpg",
       "description": "<p>Lorem ipsum dolor sit amet...</p>"
     },
     {
+      "externalId": "xyz",
       "title": "Wizard's First Rule",
       "author": "Terry Goodkind",
       "imageUrl": "http://vignette1.wikia.nocookie.net/talismans-tower/images/f/fe/Wizards_first_rule.jpg/revision/latest?cb=20150410222111",
