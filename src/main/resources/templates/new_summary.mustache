@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title> {{ title }} </title>
+        {{>common}}
+        <link rel="stylesheet" type="text/css" href="/styles/book.css">
+    </head>
+    <body>
+        {{>navbar}}
+        <div class="panel container">
+            <div class="row">
+                <div class="col-xs-6">
+                    <h1>{{ title }}</h1>
+                </div>
+                <div class="col-xs-6">
+                    <h2 class="book-author">{{ author }}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <form>
+                        <div class="form-group">
+                            <textarea class="form-control" rows="16"></textarea>
+                            <button type="submit" class="btn btn-block btn-default">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
