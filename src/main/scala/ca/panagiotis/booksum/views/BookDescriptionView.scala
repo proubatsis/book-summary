@@ -1,6 +1,6 @@
 package ca.panagiotis.booksum.views
 
-import ca.panagiotis.booksum.models.BookData
+import ca.panagiotis.booksum.models.{Book, BookData}
 import com.twitter.finatra.response.Mustache
 
 /**
@@ -13,5 +13,12 @@ case class BookDescriptionView(title: String, author: String, description: Strin
 object BookDescriptionView {
   def fromBookData(bd: BookData): BookDescriptionView = {
     BookDescriptionView(bd.title, bd.author, bd.description, bd.imageUrl)
+  }
+
+  def fromBook(b: Book): Option[BookDescriptionView] = {
+    for {
+      desc <- b.description
+      img <- b.image
+    } yield BookDescriptionView(b.title, b.author, desc, img)
   }
 }

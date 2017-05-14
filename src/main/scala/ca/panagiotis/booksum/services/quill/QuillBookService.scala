@@ -17,6 +17,12 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     ctx.run(query[Book])
   }
 
+  override def findBook(bookId: Index) = {
+    for {
+      book <- ctx.run(query[Book] filter (_.id == lift(bookId)))
+    } yield book.headOption
+  }
+
   override def findBookSummary(bookId: Index) = {
     val q = quote {
       for {

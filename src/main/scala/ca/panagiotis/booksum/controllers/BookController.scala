@@ -17,7 +17,18 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     } yield {
       result match {
         case Some((b, s)) => BookSummaryView(b.title, b.author, b.description, s)
-        case None => response.notFound(NotFoundView(s"Book: ${request.id}"))
+        case None => response.notFound(NotFoundView(s"Book: ${request.id.head}"))
+      }
+    }
+  }
+
+  get("/books/:id/description") { request: BookGetRequest =>
+    for {
+      result <- bookService.findBook(request.id.head)
+    } yield {
+      result match {
+        case Some(book) => BookDescriptionView.fromBook(book).head
+        case None => response.notFound(NotFoundView(s"Book: ${request.id.head}"))
       }
     }
   }
@@ -28,7 +39,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     } yield {
       result match {
         case Some(bookData) => BookDescriptionView.fromBookData(bookData)
-        case None => response.notFound(NotFoundView(s"Book: ${request.externalId}"))
+        case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
       }
     }
   }
