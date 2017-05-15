@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
-import ca.panagiotis.booksum.views.{BookDescriptionView, BookSearchView, BookSummaryView, NotFoundView}
+import ca.panagiotis.booksum.views._
 import com.twitter.finatra.http.Controller
 
 /**
@@ -51,6 +51,17 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
           result <- bookDataService.searchBook(q)
         } yield BookSearchView(q, result)
       case None => BookSearchView("", List())
+    }
+  }
+
+  get("/books/new-summary/:external_id") { request: BookGetRequest =>
+    for {
+      result <- bookDataService.getBook(request.externalId.head)
+    } yield {
+      result match {
+        case Some(bookData) => NewSummaryView(bookData.externalId, bookData.title, bookData.author)
+        case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
+      }
     }
   }
 }

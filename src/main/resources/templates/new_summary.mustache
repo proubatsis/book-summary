@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title> {{ title }} </title>
+        <title> New Summary - {{ title }} </title>
         {{>common}}
         <link rel="stylesheet" type="text/css" href="/styles/book.css">
     </head>
@@ -17,7 +17,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-12">
-                    <form>
+                    <form method="POST" action="/books/new-summary/{{ externalId }}">
                         <div class="form-group">
                             <textarea class="form-control" rows="16"></textarea>
                             <button type="submit" class="btn btn-block btn-default">Submit</button>
