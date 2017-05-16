@@ -2,10 +2,12 @@ package ca.panagiotis.booksum.controllers
 
 import javax.inject.Inject
 
-import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest}
+import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest, CreateSummaryRequest}
+import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookException, CreateSummaryException}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
 import ca.panagiotis.booksum.views._
 import com.twitter.finatra.http.Controller
+import com.twitter.util.Future
 
 /**
   * Created by panagiotis on 23/04/17.
@@ -62,6 +64,34 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
         case Some(bookData) => NewSummaryView(bookData.externalId, bookData.title, bookData.author)
         case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
       }
+    }
+  }
+
+  post("/books/new-summary/:external_id") { request: CreateSummaryRequest =>
+    try {
+      val bookData = for {
+        data <- bookDataService.getBook(request.externalId.head)
+      } yield {
+        data match {
+          case Some(d) => d
+          case None => throw BookNotFoundException(s"Book ${request.externalId.head}")
+        }
+      }
+
+      val bookId = for {
+        data <- bookData
+        id <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
+      } yield id
+
+      for {
+        bid <- bookId
+        _ <- bookService.createSummary(bid, request.summary)
+      } yield response.temporaryRedirect.location(s"/books/${bid}/summary")
+    }
+    catch {
+      case BookNotFoundException(m) => response.notFound(m)
+      case CreateBookException() => response.internalServerError("Failed to create book")
+      case CreateSummaryException() => response.internalServerError("Failed to create summary")
     }
   }
 }
