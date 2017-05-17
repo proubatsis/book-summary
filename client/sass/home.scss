@@ -1,5 +1,16 @@
 @import "page";
+@import "globals";
 
 p.book-title {
     font-weight: bold;
+}
+
+.book-view-choice:hover {
+    text-decoration: none;
+    background: #0f0;
+}
+
+.book-view-choice {
+    background: #0a0;
+    color: #fff;
 }
