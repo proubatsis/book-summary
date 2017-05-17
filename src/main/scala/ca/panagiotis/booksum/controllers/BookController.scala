@@ -61,7 +61,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
       result <- bookDataService.getBook(request.externalId.head)
     } yield {
       result match {
-        case Some(bookData) => NewSummaryView(bookData.externalId, bookData.title, bookData.author)
+        case Some(bookData) => NewSummaryView.fromBookData(bookData)
         case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
       }
     }
@@ -88,6 +88,17 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
       case BookNotFoundException(m) => response.notFound(m)
       case CreateBookException() => response.internalServerError("Failed to create book")
       case CreateSummaryException() => response.internalServerError("Failed to create summary")
+    }
+  }
+
+  get("/books/:id/summary/new") { request: BookGetRequest =>
+    for {
+      result <- bookService.findBook(request.id.head)
+    } yield {
+      result match {
+        case Some(book) => NewSummaryView.fromBook(book)
+        case None => response.notFound(s"Book: ${request.id.head}")
+      }
     }
   }
 }
