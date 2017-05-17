@@ -7,7 +7,6 @@ import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookExcept
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
 import ca.panagiotis.booksum.views._
 import com.twitter.finatra.http.Controller
-import com.twitter.util.Future
 
 /**
   * Created by panagiotis on 23/04/17.
@@ -99,6 +98,27 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
         case Some(book) => NewSummaryView.fromBook(book)
         case None => response.notFound(s"Book: ${request.id.head}")
       }
+    }
+  }
+
+  post("/books/:id/summary/new") { request: CreateSummaryRequest =>
+    try {
+      val bookFuture = for {
+        book <- bookService.findBook(request.id.head)
+      } yield {
+        book match {
+          case Some(b) => b
+          case None => throw BookNotFoundException(s"Book: ${request.id.head}")
+        }
+      }
+
+      for {
+        book <- bookFuture
+        _ <- bookService.createSummary(book.id, request.summary)
+      } yield response.found.location(s"/books/${book.id}/summary")
+    }
+    catch {
+      case BookNotFoundException(m) => response.notFound(m)
     }
   }
 }
