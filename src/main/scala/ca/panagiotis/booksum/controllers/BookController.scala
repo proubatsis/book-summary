@@ -56,7 +56,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     }
   }
 
-  get("/books/new-summary/:external_id") { request: BookGetRequest =>
+  get("/books/ext/:external_id/summary/new") { request: BookGetRequest =>
     for {
       result <- bookDataService.getBook(request.externalId.head)
     } yield {
@@ -67,7 +67,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     }
   }
 
-  post("/books/new-summary/:external_id") { request: CreateSummaryRequest =>
+  post("/books/ext/:external_id/summary/new") { request: CreateSummaryRequest =>
     try {
       val bookData = for {
         data <- bookDataService.getBook(request.externalId.head)
