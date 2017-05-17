@@ -29,7 +29,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
       result <- bookService.findBook(request.id.head)
     } yield {
       result match {
-        case Some(book) => BookDescriptionView.fromBook(book).head
+        case Some(book) => BookDescriptionView.fromBook(book)
         case None => response.notFound(NotFoundView(s"Book: ${request.id.head}"))
       }
     }
@@ -78,15 +78,11 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
         }
       }
 
-      val bookId = for {
-        data <- bookData
-        id <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
-      } yield id
-
       for {
-        bid <- bookId
-        _ <- bookService.createSummary(bid, request.summary)
-      } yield response.temporaryRedirect.location(s"/books/${bid}/summary")
+        data <- bookData
+        bookId <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
+        _ <- bookService.createSummary(bookId, request.summary)
+      } yield response.found.location(s"/books/$bookId/summary")
     }
     catch {
       case BookNotFoundException(m) => response.notFound(m)

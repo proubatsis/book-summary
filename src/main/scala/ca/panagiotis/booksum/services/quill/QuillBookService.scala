@@ -44,7 +44,7 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
   }
 
   override def createBook(title: String, author: String, description: String, image: String): Future[Int] = {
-    val book = Book(0, "", title, author, Some(description), Some(image))
+    val book = Book(0, title, author, description, image)
     ctx.run(query[Book].insert(lift(book)).returning(_.id))
   }
 

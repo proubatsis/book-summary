@@ -15,10 +15,7 @@ object BookDescriptionView {
     BookDescriptionView(bd.title, bd.author, bd.description, bd.imageUrl)
   }
 
-  def fromBook(b: Book): Option[BookDescriptionView] = {
-    for {
-      desc <- b.description
-      img <- b.image
-    } yield BookDescriptionView(b.title, b.author, desc, img)
+  def fromBook(b: Book): BookDescriptionView = {
+    BookDescriptionView(b.title, b.author, b.description, b.image)
   }
 }

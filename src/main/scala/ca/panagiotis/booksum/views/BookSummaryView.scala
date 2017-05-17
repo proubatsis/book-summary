@@ -8,4 +8,4 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("book")
-case class BookSummaryView(title: String, author: String, description: Option[String], summaries: List[BookSummary])
+case class BookSummaryView(title: String, author: String, description: String, summaries: List[BookSummary])

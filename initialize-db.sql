@@ -1,10 +1,9 @@
 CREATE TABLE book (
 	id SERIAL PRIMARY KEY,
-	isbn TEXT UNIQUE NOT NULL,
 	title TEXT NOT NULL,
 	author TEXT NOT NULL,
-	image TEXT,
-	description TEXT
+	image TEXT NOT NULL,
+	description TEXT NOT NULL
 );
 
 CREATE TABLE book_summary (
