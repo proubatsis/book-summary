@@ -47,7 +47,7 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     val q = quote {
       for {
         mapping <- query[BookExternalMapping].filter(_.externalId == lift(externalId)).distinct
-        book <- query[Book].filter(_.id == mapping.id)
+        book <- query[Book].filter(_.id == mapping.bookId)
       } yield book
     }
 
@@ -64,5 +64,10 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
   override def createSummary(bookId: Index, summary: String): Future[Int] = {
     val s = BookSummary(0, bookId, summary)
     ctx.run(query[BookSummary].insert(lift(s)).returning(_.id))
+  }
+
+  override def registerExternalMapping(bookId: Index, externalId: String): Future[Int] = {
+    val mapping = BookExternalMapping(0, externalId, bookId)
+    ctx.run(query[BookExternalMapping].insert(lift(mapping)).returning(_.id))
   }
 }
