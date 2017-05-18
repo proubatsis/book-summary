@@ -61,38 +61,42 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   }
 
   get("/books/ext/:external_id/summary/new") { request: BookGetRequest =>
-    for {
-      result <- bookDataService.getBook(request.externalId.head)
-    } yield {
-      result match {
-        case Some(bookData) => NewSummaryView.fromBookData(bookData)
-        case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
+    externalToInternalRedirect(request.externalId.head, response, Endpoint.Book.newSummary, () => {
+      for {
+        result <- bookDataService.getBook(request.externalId.head)
+      } yield {
+        result match {
+          case Some(bookData) => NewSummaryView.fromBookData(bookData)
+          case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
+        }
       }
-    }
+    })
   }
 
   post("/books/ext/:external_id/summary/new") { request: CreateSummaryRequest =>
-    try {
-      val bookData = for {
-        data <- bookDataService.getBook(request.externalId.head)
-      } yield {
-        data match {
-          case Some(d) => d
-          case None => throw BookNotFoundException(s"Book ${request.externalId.head}")
+    externalToInternalRedirect(request.externalId.head, response, Endpoint.Book.newSummary, () => {
+      try {
+        val bookData = for {
+          data <- bookDataService.getBook(request.externalId.head)
+        } yield {
+          data match {
+            case Some(d) => d
+            case None => throw BookNotFoundException(s"Book ${request.externalId.head}")
+          }
         }
-      }
 
-      for {
-        data <- bookData
-        bookId <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
-        _ <- bookService.createSummary(bookId, request.summary)
-      } yield response.found.location(s"/books/$bookId/summary")
-    }
-    catch {
-      case BookNotFoundException(m) => response.notFound(m)
-      case CreateBookException() => response.internalServerError("Failed to create book")
-      case CreateSummaryException() => response.internalServerError("Failed to create summary")
-    }
+        for {
+          data <- bookData
+          bookId <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
+          _ <- bookService.createSummary(bookId, request.summary)
+        } yield Future.value(response.found.location(s"/books/$bookId/summary"))
+      }
+      catch {
+        case BookNotFoundException(m) => Future.value(response.notFound(m))
+        case CreateBookException() => Future.value(response.internalServerError("Failed to create book"))
+        case CreateSummaryException() => Future.value(response.internalServerError("Failed to create summary"))
+      }
+    })
   }
 
   get("/books/:id/summary/new") { request: BookGetRequest =>
