@@ -2,7 +2,7 @@ package ca.panagiotis.booksum.services.quill
 
 import javax.inject.Inject
 
-import ca.panagiotis.booksum.models.{Book, BookSummary}
+import ca.panagiotis.booksum.models.{Book, BookExternalMapping, BookSummary}
 import ca.panagiotis.booksum.services.BookService
 import com.twitter.util.Future
 import io.getquill.{FinaglePostgresContext, SnakeCase}
@@ -41,6 +41,19 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
         case None => None
       }
     }
+  }
+
+  override def findBookFromExternalId(externalId: String): Future[Option[Book]] = {
+    val q = quote {
+      for {
+        mapping <- query[BookExternalMapping].filter(_.externalId == lift(externalId)).distinct
+        book <- query[Book].filter(_.id == mapping.id)
+      } yield book
+    }
+
+    for {
+      books <- ctx.run(q)
+    } yield books.headOption
   }
 
   override def createBook(title: String, author: String, description: String, image: String): Future[Int] = {

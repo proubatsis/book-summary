@@ -5,8 +5,11 @@ import javax.inject.Inject
 import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest, CreateSummaryRequest}
 import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookException, CreateSummaryException}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
+import ca.panagiotis.booksum.util.Endpoint
 import ca.panagiotis.booksum.views._
 import com.twitter.finatra.http.Controller
+import com.twitter.finatra.http.response.ResponseBuilder
+import com.twitter.util.Future
 
 /**
   * Created by panagiotis on 23/04/17.
@@ -35,14 +38,16 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   }
 
   get("/books/ext/:external_id/description") { request: BookGetRequest =>
-    for {
-      result <- bookDataService.getBook(request.externalId.head)
-    } yield {
-      result match {
-        case Some(bookData) => BookDescriptionView.fromBookData(bookData)
-        case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
+    externalToInternalRedirect(request.externalId.head, response, Endpoint.Book.description, () => {
+      for {
+        result <- bookDataService.getBook(request.externalId.head)
+      } yield {
+        result match {
+          case Some(bookData) => BookDescriptionView.fromBookData(bookData)
+          case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}"))
+        }
       }
-    }
+    })
   }
 
   get("/books/search") { request: BookSearchRequest =>
@@ -120,5 +125,14 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     catch {
       case BookNotFoundException(m) => response.notFound(m)
     }
+  }
+
+  private def externalToInternalRedirect(externalId: String, response: ResponseBuilder, endpoint: Int => String, f: () => Future[Any]) = {
+    (for {
+      existingBook <- bookService.findBookFromExternalId(externalId)
+    } yield existingBook match {
+      case Some(eb) => Future.value(response.temporaryRedirect.location(endpoint(eb.id)))
+      case None => f()
+    }).flatten
   }
 }

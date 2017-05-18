@@ -12,4 +12,5 @@ trait BookService {
   def findBookSummary(bookId: Int): Future[Option[(Book, List[BookSummary])]]
   def createBook(title: String, author: String, description: String, image: String): Future[Int]
   def createSummary(bookId: Int, summary: String): Future[Int]
+  def findBookFromExternalId(externalId: String): Future[Option[Book]]
 }
