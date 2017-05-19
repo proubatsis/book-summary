@@ -57,9 +57,15 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     } yield books.headOption
   }
 
-  override def search(searchQuery: String): Future[List[Book]] = {
+  override def search(searchQuery: String, startIndex: Int, maxResults: Int): Future[List[Book]] = {
     val ql = s"%${searchQuery.toLowerCase()}%"
-    ctx.run(query[Book] filter (b => (b.title.toLowerCase() like lift(ql)) || (b.author.toLowerCase() like lift(ql)) || (b.description.toLowerCase() like lift(ql))))
+
+    ctx.run(
+      query[Book]
+        .filter(b => (b.title.toLowerCase() like lift(ql)) || (b.author.toLowerCase() like lift(ql)) || (b.description.toLowerCase() like lift(ql)))
+        .drop(lift(startIndex))
+        .take(lift(maxResults))
+    )
   }
 
   override def createBook(title: String, author: String, description: String, image: String): Future[Int] = {

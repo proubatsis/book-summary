@@ -15,6 +15,9 @@ import com.twitter.util.Future
   * Created by panagiotis on 23/04/17.
   */
 class BookController @Inject() (bookService: BookService, bookDataService: BookDataService) extends Controller {
+  private val BOOK_SEARCH_INDEX = 0
+  private val BOOK_SEARCH_MAX_RESULTS = 10
+
   get("/books/:id/summary") { request: BookGetRequest =>
     for {
       result <- bookService.findBookSummary(request.id.head)
@@ -54,7 +57,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     request.q match {
       case Some(q) =>
         for {
-          result <- bookDataService.searchBook(q)
+          result <- bookDataService.searchBook(q, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS)
         } yield BookSearchView(q, result)
       case None => BookSearchView("", List())
     }

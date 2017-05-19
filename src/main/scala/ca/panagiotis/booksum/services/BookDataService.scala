@@ -8,5 +8,5 @@ import com.twitter.util.Future
   */
 trait BookDataService {
   def getBook(id: String): Future[Option[BookData]]
-  def searchBook(query: String): Future[List[BookData]]
+  def searchBook(query: String, startIndex: Int, maxResults: Int): Future[List[BookData]]
 }

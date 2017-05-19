@@ -22,9 +22,9 @@ class GoogleBookDataService extends BookDataService{
     } yield convertToBookData(gbd)
   }
 
-  override def searchBook(query: String) = {
+  override def searchBook(query: String, startIndex: Int, maxResults: Int) = {
     for {
-      res <- GoogleApiClient.call("/books/v1/volumes", Map("q" -> query))
+      res <- GoogleApiClient.call("/books/v1/volumes", Map("q" -> query, "startIndex" -> startIndex.toString, "maxResults" -> maxResults.toString))
       books = mapper.readValue[GoogleBookDataSearchResults](res.contentString)
     } yield books.items.flatMap(convertToBookData)
   }
