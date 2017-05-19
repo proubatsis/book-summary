@@ -5,6 +5,7 @@ import javax.inject.Inject
 import ca.panagiotis.booksum.models.{Book, BookExternalMapping, BookSummary}
 import ca.panagiotis.booksum.services.BookService
 import com.twitter.util.Future
+import io.getquill.ast.BooleanOperator.||
 import io.getquill.{FinaglePostgresContext, SnakeCase}
 
 /**
@@ -54,6 +55,11 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     for {
       books <- ctx.run(q)
     } yield books.headOption
+  }
+
+  override def search(searchQuery: String): Future[List[Book]] = {
+    val ql = s"%${searchQuery.toLowerCase()}%"
+    ctx.run(query[Book] filter (b => (b.title.toLowerCase() like lift(ql)) || (b.author.toLowerCase() like lift(ql)) || (b.description.toLowerCase() like lift(ql))))
   }
 
   override def createBook(title: String, author: String, description: String, image: String): Future[Int] = {

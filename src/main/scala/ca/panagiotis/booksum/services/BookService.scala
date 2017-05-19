@@ -14,4 +14,5 @@ trait BookService {
   def createSummary(bookId: Int, summary: String): Future[Int]
   def findBookFromExternalId(externalId: String): Future[Option[Book]]
   def registerExternalMapping(bookId: Int, externalId: String): Future[Int]
+  def search(query: String): Future[List[Book]]
 }
