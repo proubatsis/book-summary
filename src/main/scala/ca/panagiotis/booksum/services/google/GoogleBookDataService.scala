@@ -17,14 +17,14 @@ class GoogleBookDataService extends BookDataService{
 
   override def getBook(id: String) = {
     for {
-      res <- GoogleApiClient.call("/books/v1/volumes/" + id, ("",""))
+      res <- GoogleApiClient.call("/books/v1/volumes/" + id, Map())
       gbd = mapper.readValue[GoogleBookData](res.contentString)
     } yield convertToBookData(gbd)
   }
 
   override def searchBook(query: String) = {
     for {
-      res <- GoogleApiClient.call("/books/v1/volumes", ("q", query))
+      res <- GoogleApiClient.call("/books/v1/volumes", Map("q" -> query))
       books = mapper.readValue[GoogleBookDataSearchResults](res.contentString)
     } yield books.items.flatMap(convertToBookData)
   }

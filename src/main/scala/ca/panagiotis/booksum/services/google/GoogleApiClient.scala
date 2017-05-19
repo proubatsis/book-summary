@@ -8,7 +8,7 @@ import com.twitter.finagle.http.Request
   */
 object GoogleApiClient {
   val client = Http.client.withTls("www.googleapis.com").newService("www.googleapis.com:443")
-  def call(endpoint: String, query: (String, String)) = {
-    client(Request(endpoint, query))
+  def call(endpoint: String, query: Map[String, String]) = {
+    client(Request(endpoint, query.toSeq:_*))
   }
 }
