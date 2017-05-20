@@ -8,4 +8,4 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("search")
-case class BookSearchView(q: String, books: List[BookData])
+case class BookSearchView(q: String, books: List[BookData], previous: Option[String], next: Option[String])

@@ -1,5 +1,7 @@
 {
   "q": "fantasy",
+  "previous": "/abc",
+  "next": "/xyz",
   "books": [
     {
       "externalId": "abc",
@@ -15,5 +17,5 @@
       "imageUrl": "http://vignette1.wikia.nocookie.net/talismans-tower/images/f/fe/Wizards_first_rule.jpg/revision/latest?cb=20150410222111",
       "description": "<p>Lorem ipsum dolor sit amet...</p>"
     }
-  ]
+]
 }

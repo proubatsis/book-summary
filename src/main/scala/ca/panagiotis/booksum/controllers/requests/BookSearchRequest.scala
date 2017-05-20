@@ -8,5 +8,6 @@ import com.twitter.finatra.request.QueryParam
   */
 case class BookSearchRequest(
                             request: Request,
-                            @QueryParam q: Option[String]
+                            @QueryParam q: Option[String],
+                            @QueryParam t: Option[String]
                             )

@@ -4,8 +4,9 @@ import javax.inject.Inject
 
 import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest, CreateSummaryRequest}
 import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookException, CreateSummaryException}
+import ca.panagiotis.booksum.models.SearchPaginationModel
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
-import ca.panagiotis.booksum.util.Endpoint
+import ca.panagiotis.booksum.util.{Endpoint, Token}
 import ca.panagiotis.booksum.views._
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.response.ResponseBuilder
@@ -54,12 +55,24 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   }
 
   get("/books/search") { request: BookSearchRequest =>
-    request.q match {
-      case Some(q) =>
+    val seekToken = { (spm: SearchPaginationModel, f: (Int, Int) => Int) =>
+      Token.encodeSearchPagination(SearchPaginationModel(spm.q, f(spm.startIndex, spm.maxResults), spm.maxResults))
+    }
+
+    (request.q, request.t) match {
+      case (_, Some(t)) =>
+        Token.decodeSearchPagination(t) match {
+          case Some(pagination) =>
+              for {
+                result <- bookDataService.searchBook(pagination.q, pagination.startIndex, pagination.maxResults)
+              } yield BookSearchView(pagination.q, result, Some(Endpoint.Book.searchToken(seekToken(pagination, (a, b) => a - b))), Some(Endpoint.Book.searchToken(seekToken(pagination, (a, b) => a + b))))
+          case None => response.temporaryRedirect.location("/books/search")
+        }
+      case (Some(q), _) =>
         for {
           result <- bookDataService.searchBook(q, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS)
-        } yield BookSearchView(q, result)
-      case None => BookSearchView("", List())
+        } yield BookSearchView(q, result, None, Some(Endpoint.Book.searchToken(Token.encodeSearchPagination(SearchPaginationModel(q, BOOK_SEARCH_MAX_RESULTS, BOOK_SEARCH_MAX_RESULTS)))))
+      case _ => BookSearchView("", List(), None, None)
     }
   }
 

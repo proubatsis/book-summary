@@ -35,6 +35,19 @@
                 </div>
             </div>
             {{/books}}
+
+            <div class="row">
+                {{#previous}}
+                <div class="{{#next}} col-xs-offset-3 col-xs-3 {{/next}} {{^next}} col-xs-offset-3 col-xs-6 {{/next}}">
+                    <a class="btn btn-default btn-block" href="{{ . }}">Previous</a>
+                </div>
+                {{/previous}}
+                {{#next}}
+                <div class="{{#previous}} col-xs-3 {{/previous}} {{^previous}} col-xs-offset-3 col-xs-6 {{/previous}}">
+                    <a class="btn btn-default btn-block" href="{{ . }}">Next</a>
+                </div>
+                {{/next}}
+            </div>
         </div>
     </body>
 </html>
