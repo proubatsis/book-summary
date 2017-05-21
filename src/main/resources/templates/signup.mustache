@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>Signup - Book Summary</title>
+        {{>common}}
+        <link type="text/css" rel="stylesheet" href="/styles/user.css">
+    </head>
+
+    <body>
+        {{>navbar}}
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12"><h1>Signup</h1></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <form method="POST" action="/users/login">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label>Email</label>
+                                <input name="email" type="text" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label>Username</label>
+                                <input name="username" type="text" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-6">
+                                <label>Password</label>
+                                <input name="password" type="text" class="form-control"/>
+                            </div>
+                            <div class="col-xs-12 col-lg-6">
+                                <label>Confirm Password</label>
+                                <input name="confirm_password" type="text" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="submit" class="btn btn-default btn-block">Create Account</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

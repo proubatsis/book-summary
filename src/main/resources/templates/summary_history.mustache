@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>{{ username }} - Book Summary</title>
+        {{>common}}
+        <link type="text/css" rel="stylesheet" href="/styles/user.css">
+    </head>
+
+    <body>
+        {{>navbar}}
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12"><h1>{{ username }} - Summary History</h1></div>
+            </div>
+            <div class="row summary-history-item">
+                <div class="col-xs-offset-2 col-xs-3">
+                    <p>Date</p>
+                </div>
+                <div class="col-xs-7">
+                    <p>Book</p>
+                </div>
+            </div>
+            {{#summaries}}
+            <div class="row summary-history-item">
+                <div class="col-xs-offset-2 col-xs-3">
+                    <p>{{ date }}</p>
+                </div>
+                <div class="col-xs-7">
+                    <a href="{{ summary_link }}">{{ book_title }} by {{ author }}</a>
+                </div>
+            </div>
+            {{/summaries}}
+        </div>
+    </body>
+</html>

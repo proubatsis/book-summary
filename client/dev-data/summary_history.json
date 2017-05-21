@@ -1,0 +1,8 @@
+{
+    "username": "proubatsis",
+    "summaries": [
+        { "book_title": "Harry Potter", "author": "JK Rowling", "date": "2017-05-27", "summary_link": "/books/1/summary" },
+        { "book_title": "Hunger Games", "author": "Susanne Collins", "date": "2017-05-24", "summary_link": "/books/4/summary" },
+        { "book_title": "Animal Farm", "author": "George Orwell", "date": "2017-04-01", "summary_link": "/books/2/summary" }
+    ]
+}
