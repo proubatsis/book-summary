@@ -26,3 +26,17 @@ input {
         color: #080;
     }
 }
+
+.message {
+    font-size: 1.25em;
+    padding: 0.5em;
+    text-align: center;
+
+    &.error {
+        background: #A00;
+    }
+
+    &.success {
+        background: #0A0;
+    }
+}

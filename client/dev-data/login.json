@@ -1,1 +1,5 @@
-{}
+{
+    "error": "Email error",
+    "success": "Signup complete",
+    "email": "abc@xyz.com"
+}
