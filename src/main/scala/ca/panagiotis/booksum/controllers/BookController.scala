@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest, CreateSummaryRequest, RequestUtil}
 import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookException, CreateSummaryException}
-import ca.panagiotis.booksum.models.{Account, SearchPaginationModel}
+import ca.panagiotis.booksum.models.{Account, BookData, SearchPaginationModel}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
 import ca.panagiotis.booksum.util.{Endpoint, Token}
 import ca.panagiotis.booksum.views._
@@ -56,24 +56,16 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   }
 
   get("/books/search") { request: BookSearchRequest =>
-    val seekToken = { (spm: SearchPaginationModel, f: (Int, Int) => Int) =>
-      Token.encodeSearchPagination(SearchPaginationModel(spm.q, f(spm.startIndex, spm.maxResults), spm.maxResults))
-    }
+    val emptySearch = BookSearchView("", List(), None, None)
 
     (request.q, request.t) match {
       case (_, Some(t)) =>
         Token.decodeSearchPagination(t) match {
-          case Some(pagination) =>
-              for {
-                result <- bookDataService.searchBook(pagination.q, pagination.startIndex, pagination.maxResults)
-              } yield BookSearchView(pagination.q, result, Some(Endpoint.Book.searchToken(seekToken(pagination, (a, b) => a - b))), Some(Endpoint.Book.searchToken(seekToken(pagination, (a, b) => a + b))))
-          case None => response.temporaryRedirect.location("/books/search")
+          case Some(pagination) => searchBook[BookData](pagination.q, pagination.startIndex, pagination.maxResults, bookDataService.searchBook, BookItemView.fromBookData)
+          case None => emptySearch
         }
-      case (Some(q), _) =>
-        for {
-          result <- bookDataService.searchBook(q, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS)
-        } yield BookSearchView(q, result, None, Some(Endpoint.Book.searchToken(Token.encodeSearchPagination(SearchPaginationModel(q, BOOK_SEARCH_MAX_RESULTS, BOOK_SEARCH_MAX_RESULTS)))))
-      case _ => BookSearchView("", List(), None, None)
+      case (Some(q), _) => searchBook(q, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, bookDataService.searchBook, BookItemView.fromBookData)
+      case _ => emptySearch
     }
   }
 
@@ -171,5 +163,20 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
   private def externalToInternalRedirectThenAuthorize(req: Request, externalId: String, response: ResponseBuilder, endpoint: Int => String, f: Account => Future[Any]) = {
     externalToInternalRedirect(externalId, response, endpoint, () => authorize(req, response, f))
+  }
+
+  private def searchBook[T](q: String, startIndex: Int, maxResults: Int, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView) = {
+    val seekToken = {
+      (spm: SearchPaginationModel, f: (Int, Int) => Int) =>
+        Token.encodeSearchPagination(SearchPaginationModel(spm.q, f(spm.startIndex, spm.maxResults), spm.maxResults))
+    }
+
+    val pagination = SearchPaginationModel(q, startIndex, maxResults)
+    val previous = if(startIndex >= maxResults) Some(seekToken(pagination, (a, b) => a - b)) else None
+    val next = Some(seekToken(pagination, (a, b) => a + b))
+
+    for {
+      result <- search(q, startIndex, maxResults)
+    } yield BookSearchView(q, result map toItem, previous map Endpoint.Book.searchToken, next map Endpoint.Book.searchToken)
   }
 }
