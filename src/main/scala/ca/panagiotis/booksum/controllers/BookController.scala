@@ -55,19 +55,8 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     })
   }
 
-  get("/books/search") { request: BookSearchRequest =>
-    val emptySearch = BookSearchView("", List(), None, None)
-
-    (request.q, request.t) match {
-      case (_, Some(t)) =>
-        Token.decodeSearchPagination(t) match {
-          case Some(pagination) => searchBook[BookData](pagination.q, pagination.startIndex, pagination.maxResults, bookDataService.searchBook, BookItemView.fromBookData)
-          case None => emptySearch
-        }
-      case (Some(q), _) => searchBook(q, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, bookDataService.searchBook, BookItemView.fromBookData)
-      case _ => emptySearch
-    }
-  }
+  get("/books/search") (searchRequest(bookService.search, BookItemView.fromBook))
+  get("/books/ext/search") (searchRequest(bookDataService.searchBook, BookItemView.fromBookData))
 
   get("/books/ext/:external_id/summary/new") { request: BookGetRequest =>
     externalToInternalRedirectThenAuthorize(request.request, request.externalId.head, response, Endpoint.Book.newSummary, _ => {
@@ -178,5 +167,19 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     for {
       result <- search(q, startIndex, maxResults)
     } yield BookSearchView(q, result map toItem, previous map Endpoint.Book.searchToken, next map Endpoint.Book.searchToken)
+  }
+
+  private def searchRequest[T](search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView) = { request: BookSearchRequest =>
+    val emptySearch = BookSearchView("", List(), None, None)
+
+    (request.q, request.t) match {
+      case (_, Some(t)) =>
+        Token.decodeSearchPagination(t) match {
+          case Some(pagination) => searchBook(pagination.q, pagination.startIndex, pagination.maxResults, search, toItem)
+          case None => emptySearch
+        }
+      case (Some(q), _) => searchBook(q, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, search, toItem)
+      case _ => emptySearch
+    }
   }
 }
