@@ -14,6 +14,8 @@ object Endpoint {
     def externalNewSummary(eid: String) = s"/books/ext/$eid/summary/new"
     def searchQuery(q: String) = s"/books/search?q=$q"
     def searchToken(t: String) = s"/books/search?t=$t"
+    def externalSearchQuery(q: String) = s"/books/ext/search?q=$q"
+    def externalSearchToken(t: String) = s"/books/ext/search?t=$t"
   }
 
   def makeUrl(endpoint: String) = s"$host$endpoint"

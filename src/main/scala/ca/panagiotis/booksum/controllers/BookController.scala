@@ -55,8 +55,8 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     })
   }
 
-  get("/books/search") (searchRequest(bookService.search, BookItemView.fromBook))
-  get("/books/ext/search") (searchRequest(bookDataService.searchBook, BookItemView.fromBookData))
+  get("/books/search") (searchRequest("/books/search", bookService.search, BookItemView.fromBook, Endpoint.Book.searchToken))
+  get("/books/ext/search") (searchRequest("/books/ext/search", bookDataService.searchBook, BookItemView.fromBookData, Endpoint.Book.externalSearchToken))
 
   get("/books/ext/:external_id/summary/new") { request: BookGetRequest =>
     externalToInternalRedirectThenAuthorize(request.request, request.externalId.head, response, Endpoint.Book.newSummary, _ => {
@@ -154,7 +154,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     externalToInternalRedirect(externalId, response, endpoint, () => authorize(req, response, f))
   }
 
-  private def searchBook[T](q: String, startIndex: Int, maxResults: Int, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView) = {
+  private def searchBook[T](q: String, searchUrl: String, startIndex: Int, maxResults: Int, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = {
     val seekToken = {
       (spm: SearchPaginationModel, f: (Int, Int) => Int) =>
         Token.encodeSearchPagination(SearchPaginationModel(spm.q, f(spm.startIndex, spm.maxResults), spm.maxResults))
@@ -166,19 +166,19 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
     for {
       result <- search(q, startIndex, maxResults)
-    } yield BookSearchView(q, result map toItem, previous map Endpoint.Book.searchToken, next map Endpoint.Book.searchToken)
+    } yield BookSearchView(q, searchUrl, result map toItem, previous map toSearchUrl, next map toSearchUrl)
   }
 
-  private def searchRequest[T](search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView) = { request: BookSearchRequest =>
-    val emptySearch = BookSearchView("", List(), None, None)
+  private def searchRequest[T](searchUrl: String, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = { request: BookSearchRequest =>
+    val emptySearch = BookSearchView("", searchUrl, List(), None, None)
 
     (request.q, request.t) match {
       case (_, Some(t)) =>
         Token.decodeSearchPagination(t) match {
-          case Some(pagination) => searchBook(pagination.q, pagination.startIndex, pagination.maxResults, search, toItem)
+          case Some(pagination) => searchBook(pagination.q, searchUrl, pagination.startIndex, pagination.maxResults, search, toItem, toSearchUrl)
           case None => emptySearch
         }
-      case (Some(q), _) => searchBook(q, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, search, toItem)
+      case (Some(q), _) => searchBook(q, searchUrl, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, search, toItem, toSearchUrl)
       case _ => emptySearch
     }
   }
