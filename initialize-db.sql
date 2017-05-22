@@ -13,9 +13,21 @@ CREATE TABLE book_summary (
 );
 
 CREATE TABLE book_external_mapping(
-	id SERIAL,
+	id SERIAL PRIMARY KEY,
 	external_id TEXT UNIQUE,
 	book_id INTEGER REFERENCES book(id)
+);
+
+CREATE TABLE booksum_user (
+	id SERIAL PRIMARY KEY,
+	email TEXT UNIQUE,
+	PASSWORD TEXT
+);
+
+CREATE TABLE account (
+	id SERIAL PRIMARY KEY,
+	username TEXT UNIQUE,
+	user_id INTEGER REFERENCES booksum_user(id)
 );
 
 INSERT INTO book (isbn, title, author, description) VALUES
