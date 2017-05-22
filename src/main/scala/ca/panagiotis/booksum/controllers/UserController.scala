@@ -1,21 +1,24 @@
 package ca.panagiotis.booksum.controllers
 
+import java.lang.Exception
 import javax.inject.Inject
 
 import ca.panagiotis.booksum.controllers.requests.{CreateUserRequest, LoginRequest}
 import ca.panagiotis.booksum.models.BooksumUser
 import ca.panagiotis.booksum.services.UserService
-import ca.panagiotis.booksum.util.Token
+import ca.panagiotis.booksum.util.{Endpoint, Token}
 import ca.panagiotis.booksum.views.{LoginView, SignupView, UserSummaryHistoryView}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
+import com.twitter.util.Future
+
 
 /**
   * Created by panagiotis on 21/05/17.
   */
 class UserController @Inject() (userService: UserService) extends Controller {
   get("/login") { req: Request =>
-    LoginView(None)
+    LoginView(None, None, None)
   }
 
   get("/signup") { req: Request =>
@@ -27,9 +30,11 @@ class UserController @Inject() (userService: UserService) extends Controller {
   }
 
   post("/signup") { req: CreateUserRequest =>
-    for {
+    (for {
       _ <- userService.createUserAccount(req.email, req.username, req.password) if req.password.equals(req.confirmPassword)
-    } yield LoginView(None)
+    } yield response.temporaryRedirect.location("/login")) rescue {
+      case _: Throwable => Future.value(SignupView(Some(s"User with ${req.email} or ${req.username} already exists!")))
+    }
   }
 
   post("/login") { req: LoginRequest =>
@@ -38,8 +43,8 @@ class UserController @Inject() (userService: UserService) extends Controller {
     } yield userAccount match {
       case Some((user, account)) => {
         if (BooksumUser.isValidPassword(user, req.password))
-          response.temporaryRedirect.location("/").cookie("access", Token.encodeAccessToken(account))
-        else LoginView(None)
+          response.temporaryRedirect.location(Endpoint.host).cookie("access", Token.encodeAccessToken(account))
+        else LoginView(None, None, None)
       }
       case None => None
     }
