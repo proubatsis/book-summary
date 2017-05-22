@@ -32,8 +32,8 @@ class UserController @Inject() (userService: UserService) extends Controller {
   post("/signup") { req: CreateUserRequest =>
     (for {
       _ <- userService.createUserAccount(req.email, req.username, req.password) if req.password.equals(req.confirmPassword)
-    } yield response.temporaryRedirect.location("/login")) rescue {
-      case _: Throwable => Future.value(SignupView(Some(s"User with ${req.email} or ${req.username} already exists!")))
+    } yield LoginView(None, Some("Account created!"), Some(req.email))) rescue {
+      case _: Throwable => Future.value(SignupView(Some("Error creating this user!")))
     }
   }
 
@@ -44,7 +44,7 @@ class UserController @Inject() (userService: UserService) extends Controller {
       case Some((user, account)) => {
         if (BooksumUser.isValidPassword(user, req.password))
           response.temporaryRedirect.location("/").cookie("access", Token.encodeAccessToken(account))
-        else LoginView(None, None, None)
+        else LoginView(Some("Invalid email or password!"), None, Some(req.email))
       }
       case None => None
     }
