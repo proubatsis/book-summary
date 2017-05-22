@@ -25,7 +25,7 @@ class QuillUserService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
   }
 
   override def createUserAccount(email: String, username: String, password: String): Future[(Int, Int)] = {
-    val user = BooksumUser(0, email, password)
+    val user = BooksumUser.withHashedPassword(BooksumUser(0, email, password))
 
     for {
       userId <- ctx.run(query[BooksumUser].insert(lift(user)).returning(_.id))
