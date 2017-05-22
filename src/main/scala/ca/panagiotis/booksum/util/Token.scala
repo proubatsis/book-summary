@@ -13,10 +13,10 @@ import scala.util.Try
   */
 object Token {
   private val paginationAlgorithm = JwtAlgorithm.HMD5
-  private val paginationSecret = "JkjHCi3nw8*#W*(YhIUY#@ueshjD(OI#e"
+  private val paginationSecret = sys.env.getOrElse("BOOKSUM_PAGINATION_SECRET", "JkjHCi3nw8*#W*(YhIUY#@ueshjD(OI#e")
 
   private val accessAlgorithm = JwtAlgorithm.HS512
-  private val accessSecret = "fdeuwni*HF(OIjrkfdkjfhuehr8HF&I$#UHRIEUKfjd"
+  private val accessSecret = sys.env.getOrElse("BOOKSUM_ACCESS_SECRET", "fdeuwni*HF(OIjrkfdkjfhuehr8HF&I$#UHRIEUKfjd")
   private val accessExpiryInSeconds = 60 * 8
 
   private val mapper = new ObjectMapper() with ScalaObjectMapper
