@@ -2,12 +2,13 @@ package ca.panagiotis.booksum.controllers
 
 import javax.inject.Inject
 
-import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest, CreateSummaryRequest}
+import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest, CreateSummaryRequest, RequestUtil}
 import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookException, CreateSummaryException}
-import ca.panagiotis.booksum.models.SearchPaginationModel
+import ca.panagiotis.booksum.models.{Account, SearchPaginationModel}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
 import ca.panagiotis.booksum.util.{Endpoint, Token}
 import ca.panagiotis.booksum.views._
+import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.response.ResponseBuilder
 import com.twitter.util.Future
@@ -77,7 +78,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   }
 
   get("/books/ext/:external_id/summary/new") { request: BookGetRequest =>
-    externalToInternalRedirect(request.externalId.head, response, Endpoint.Book.newSummary, () => {
+    externalToInternalRedirectThenAuthorize(request.request, request.externalId.head, response, Endpoint.Book.newSummary, _ => {
       for {
         result <- bookDataService.getBook(request.externalId.head)
       } yield {
@@ -90,7 +91,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   }
 
   post("/books/ext/:external_id/summary/new") { request: CreateSummaryRequest =>
-    externalToInternalRedirect(request.externalId.head, response, Endpoint.Book.newSummary, () => {
+    externalToInternalRedirectThenAuthorize(request.request, request.externalId.head, response, Endpoint.Book.newSummary, account => {
       try {
         val bookData = for {
           data <- bookDataService.getBook(request.externalId.head)
@@ -117,35 +118,39 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   }
 
   get("/books/:id/summary/new") { request: BookGetRequest =>
-    for {
-      result <- bookService.findBook(request.id.head)
-    } yield {
-      result match {
-        case Some(book) => NewSummaryView.fromBook(book)
-        case None => response.notFound(s"Book: ${request.id.head}")
+    authorize(request.request, response, { _ =>
+      for {
+        result <- bookService.findBook(request.id.head)
+      } yield {
+        result match {
+          case Some(book) => NewSummaryView.fromBook(book)
+          case None => response.notFound(s"Book: ${request.id.head}")
+        }
       }
-    }
+    })
   }
 
   post("/books/:id/summary/new") { request: CreateSummaryRequest =>
-    try {
-      val bookFuture = for {
-        book <- bookService.findBook(request.id.head)
-      } yield {
-        book match {
-          case Some(b) => b
-          case None => throw BookNotFoundException(s"Book: ${request.id.head}")
+    authorize(request.request, response, { account =>
+      try {
+        val bookFuture = for {
+          book <- bookService.findBook(request.id.head)
+        } yield {
+          book match {
+            case Some(b) => b
+            case None => throw BookNotFoundException(s"Book: ${request.id.head}")
+          }
         }
-      }
 
-      for {
-        book <- bookFuture
-        _ <- bookService.createSummary(book.id, request.summary)
-      } yield response.found.location(Endpoint.Book.summary(book.id))
-    }
-    catch {
-      case BookNotFoundException(m) => response.notFound(m)
-    }
+        for {
+          book <- bookFuture
+          _ <- bookService.createSummary(book.id, request.summary)
+        } yield response.found.location(Endpoint.Book.summary(book.id))
+      }
+      catch {
+        case BookNotFoundException(m) => Future.value(response.notFound(m))
+      }
+    })
   }
 
   private def externalToInternalRedirect(externalId: String, response: ResponseBuilder, endpoint: Int => String, f: () => Future[Any]) = {
@@ -155,5 +160,16 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
       case Some(eb) => Future.value(response.temporaryRedirect.location(endpoint(eb.id)))
       case None => f()
     }).flatten
+  }
+
+  private def authorize(req: Request, response: ResponseBuilder, f: Account => Future[Any]) = {
+    RequestUtil.getAuthorizedAccount(req) match {
+      case Some(account) => f(account)
+      case None => Future.value(response.temporaryRedirect.location("/"))
+    }
+  }
+
+  private def externalToInternalRedirectThenAuthorize(req: Request, externalId: String, response: ResponseBuilder, endpoint: Int => String, f: Account => Future[Any]) = {
+    externalToInternalRedirect(externalId, response, endpoint, () => authorize(req, response, f))
   }
 }

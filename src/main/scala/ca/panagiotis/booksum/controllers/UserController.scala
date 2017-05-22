@@ -43,7 +43,7 @@ class UserController @Inject() (userService: UserService) extends Controller {
     } yield userAccount match {
       case Some((user, account)) => {
         if (BooksumUser.isValidPassword(user, req.password))
-          response.temporaryRedirect.location(Endpoint.host).cookie("access", Token.encodeAccessToken(account))
+          response.temporaryRedirect.location("/").cookie("access", Token.encodeAccessToken(account))
         else LoginView(None, None, None)
       }
       case None => None

@@ -1,12 +1,12 @@
 package ca.panagiotis.booksum.util
 
 import ca.panagiotis.booksum.models.{Account, SearchPaginationModel}
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim}
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 /**
   * Created by panagiotis on 20/05/17.
@@ -21,6 +21,7 @@ object Token {
 
   private val mapper = new ObjectMapper() with ScalaObjectMapper
   mapper.registerModule(DefaultScalaModule)
+  mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
   def encodeSearchPagination(searchPaginationModel: SearchPaginationModel): String = {
     val spmJson = mapper.writeValueAsString(searchPaginationModel)
