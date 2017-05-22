@@ -1,11 +1,11 @@
 package ca.panagiotis.booksum.services.quill
 
+import java.util.Date
 import javax.inject.Inject
 
-import ca.panagiotis.booksum.models.{Book, BookExternalMapping, BookSummary}
+import ca.panagiotis.booksum.models.{Account, Book, BookExternalMapping, BookSummary}
 import ca.panagiotis.booksum.services.BookService
 import com.twitter.util.Future
-import io.getquill.ast.BooleanOperator.||
 import io.getquill.{FinaglePostgresContext, SnakeCase}
 
 /**
@@ -24,21 +24,22 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     } yield book.headOption
   }
 
-  override def findBookSummary(bookId: Index) = {
+  override def findBookSummaryAccount(bookId: Index): Future[Option[(Book, List[(BookSummary, Account)])]] = {
     val q = quote {
       for {
         b <- query[Book].filter(_.id == lift(bookId)).distinct
         s <- query[BookSummary].join(_.bookId == b.id)
-      } yield (b, s)
+        a <- query[Account].join(_.id == s.accountId)
+      } yield (b, s, a)
     }
 
     for {
       results <- ctx.run(q)
-      (books, summaries) = results.unzip
+      (books, summaries, accounts) = results.unzip3
       book = books.headOption
     } yield {
       book match {
-        case Some(b) => Some((b, summaries))
+        case Some(b) => Some((b, summaries zip accounts))
         case None => None
       }
     }
@@ -73,12 +74,12 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     ctx.run(query[Book].insert(lift(book)).returning(_.id))
   }
 
-  override def createSummary(bookId: Index, summary: String): Future[Int] = {
-    val s = BookSummary(0, bookId, summary)
+  override def createSummary(bookId: Int, accountId: Int, summary: String): Future[Int] = {
+    val s = BookSummary(0, accountId, new Date(), bookId, summary)
     ctx.run(query[BookSummary].insert(lift(s)).returning(_.id))
   }
 
-  override def registerExternalMapping(bookId: Index, externalId: String): Future[Int] = {
+  override def registerExternalMapping(bookId: Int, externalId: String): Future[Int] = {
     val mapping = BookExternalMapping(0, externalId, bookId)
     ctx.run(query[BookExternalMapping].insert(lift(mapping)).returning(_.id))
   }

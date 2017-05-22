@@ -22,10 +22,10 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
   get("/books/:id/summary") { request: BookGetRequest =>
     for {
-      result <- bookService.findBookSummary(request.id.head)
+      result <- bookService.findBookSummaryAccount(request.id.head)
     } yield {
       result match {
-        case Some((b, s)) => BookSummaryView(b.title, b.author, b.description, s)
+        case Some((b, sa)) => BookSummaryView.create(b, sa)
         case None => response.notFound(NotFoundView(s"Book: ${request.id.head}"))
       }
     }
@@ -106,7 +106,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
           data <- bookData
           bookId <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
           _ <- bookService.registerExternalMapping(bookId, request.externalId.head)
-          _ <- bookService.createSummary(bookId, request.summary)
+          _ <- bookService.createSummary(bookId, account.id, request.summary)
         } yield response.found.location(Endpoint.Book.summary(bookId))
       }
       catch {
@@ -144,7 +144,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
         for {
           book <- bookFuture
-          _ <- bookService.createSummary(book.id, request.summary)
+          _ <- bookService.createSummary(book.id, account.id, request.summary)
         } yield response.found.location(Endpoint.Book.summary(book.id))
       }
       catch {
