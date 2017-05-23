@@ -8,6 +8,7 @@ import com.twitter.util.Future
   */
 trait BookService {
   def findBooks(): Future[List[Book]]
+  def findAccountSummaryHistory(accountId: Int): Future[Option[(Account, List[(Book, BookSummary)])]]
   def findBook(bookId: Int): Future[Option[Book]]
   def findBookSummaryAccount(bookId: Int): Future[Option[(Book, List[(BookSummary, Account)])]]
   def createBook(title: String, author: String, description: String, image: String): Future[Int]

@@ -18,7 +18,27 @@ class QuillBookService @Inject() (ctx: FinaglePostgresContext[SnakeCase]) extend
     ctx.run(query[Book])
   }
 
-  override def findBook(bookId: Index) = {
+  override def findAccountSummaryHistory(accountId: Index): Future[Option[(Account, List[(Book, BookSummary)])]] = {
+    val q = quote {
+      for {
+        account <- query[Account] filter (_.id == lift(accountId))
+        summary <- query[BookSummary] join (_.accountId == account.id)
+        book <- query[Book] join (_.id == summary.bookId)
+      } yield (account, book, summary)
+    }
+
+    for {
+      result <- ctx.run(q)
+      (accounts, books, summaries) = result.unzip3
+    } yield {
+      accounts.headOption match {
+        case Some(account) => Some((account, books zip summaries))
+        case None => None
+      }
+    }
+  }
+
+  override def findBook(bookId: Index): Future[Option[Book]] = {
     for {
       book <- ctx.run(query[Book] filter (_.id == lift(bookId)))
     } yield book.headOption

@@ -1,5 +1,7 @@
 package ca.panagiotis.booksum.views
 
+import java.text.SimpleDateFormat
+
 import ca.panagiotis.booksum.models.{Book, BookSummary}
 import ca.panagiotis.booksum.util.Endpoint
 import com.twitter.finatra.response.Mustache
@@ -12,11 +14,12 @@ case class UserSummaryHistoryView(username: String, summaries: List[SummaryHisto
 case class SummaryHistoryViewItem(date: String, title: String, author: String, summary_link: String)
 
 object UserSummaryHistoryView {
+  private val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
+
   def fromUserAndSummaries(username: String, booksAndSummaries: List[(Book, BookSummary)]): UserSummaryHistoryView = {
     val items = booksAndSummaries map {
       case (book, summary) => {
-        val date = "2015-01-01"
-        SummaryHistoryViewItem(date, book.title, book.author, Endpoint.Book.summary(book.id))
+        SummaryHistoryViewItem(dateFormat.format(summary.postedDate), book.title, book.author, Endpoint.Book.summary(book.id))
       }
     }
 
