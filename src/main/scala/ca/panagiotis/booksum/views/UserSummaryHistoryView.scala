@@ -11,7 +11,7 @@ import com.twitter.finatra.response.Mustache
   */
 @Mustache("summary_history")
 case class UserSummaryHistoryView(username: String, summaries: List[SummaryHistoryViewItem])
-case class SummaryHistoryViewItem(date: String, title: String, author: String, summary_link: String)
+case class SummaryHistoryViewItem(date: String, book_title: String, author: String, summary_link: String)
 
 object UserSummaryHistoryView {
   private val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
