@@ -6,7 +6,7 @@ import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchReq
 import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookException, CreateSummaryException}
 import ca.panagiotis.booksum.models.{Account, BookData, SearchPaginationModel}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
-import ca.panagiotis.booksum.util.{Endpoint, Token}
+import ca.panagiotis.booksum.util.{Endpoint, MarkdownConvert, Token}
 import ca.panagiotis.booksum.views._
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
@@ -87,7 +87,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
           data <- bookData
           bookId <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
           _ <- bookService.registerExternalMapping(bookId, request.externalId.head)
-          _ <- bookService.createSummary(bookId, account.id, request.summary)
+          _ <- bookService.createSummary(bookId, account.id, MarkdownConvert.toHtml(request.summary))
         } yield response.found.location(Endpoint.Book.summary(bookId))
       }
       catch {
@@ -125,7 +125,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
         for {
           book <- bookFuture
-          _ <- bookService.createSummary(book.id, account.id, request.summary)
+          _ <- bookService.createSummary(book.id, account.id, MarkdownConvert.toHtml(request.summary))
         } yield response.found.location(Endpoint.Book.summary(book.id))
       }
       catch {

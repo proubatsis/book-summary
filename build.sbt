@@ -10,6 +10,7 @@ libraryDependencies ++= Seq(
   "io.getquill" % "quill_2.11" % "1.1.0",
   "io.getquill" % "quill-finagle-postgres_2.11" % "1.1.0",
   "com.pauldijou" %% "jwt-core" % "0.12.1",
-  "com.github.t3hnar" %% "scala-bcrypt" % "3.0"
+  "com.github.t3hnar" %% "scala-bcrypt" % "3.0",
+  "org.planet42" %% "laika-core" % "0.7.0"
 )
 
