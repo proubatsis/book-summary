@@ -17,7 +17,14 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 col-md-4">
-                    <img class="img-responsive sm-centered" src="{{ image }}"></img>
+                    <a href="{{ new_summary_url }}">
+                        <div class="img-container">
+                                <img class="img-responsive sm-centered" src="{{ image }}"></img>
+                            <div class="img-overlay">
+                                <p>New Summary</p>
+                            </div>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-xs-12 col-md-8">
                     <div class="sm-centered">{{{ description }}}</div>
