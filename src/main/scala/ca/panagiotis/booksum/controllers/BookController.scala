@@ -146,7 +146,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   private def authorize(req: Request, response: ResponseBuilder, f: Account => Future[Any]) = {
     RequestUtil.getAuthorizedAccount(req) match {
       case Some(account) => f(account)
-      case None => Future.value(response.temporaryRedirect.location("/"))
+      case None => Future.value(response.temporaryRedirect.location("/login"))
     }
   }
 
