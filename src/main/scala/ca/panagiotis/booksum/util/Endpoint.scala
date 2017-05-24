@@ -18,5 +18,9 @@ object Endpoint {
     def externalSearchToken(t: String) = s"/books/ext/search?t=$t"
   }
 
+  object Account {
+    def summaryHistory(id: Int) = s"/accounts/$id"
+  }
+
   def makeUrl(endpoint: String) = s"$host$endpoint"
 }
