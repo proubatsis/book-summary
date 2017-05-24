@@ -30,7 +30,9 @@
                         <div class="visible-lg-block hidden-xs-block">{{{ description }}}</div>
                     </div>
                     <div class="col-xs-12 col-lg-2 col-lg-pull-10">
-                        <a href="{{ description_url }}"><img class="img-responsive" src="{{ image }}"></img></a>
+                        <a href="{{#summary_url}} {{ . }} {{/summary_url}} {{^summary_url}} {{ description_url }} {{/summary_url}}">
+                            <img class="img-responsive" src="{{ image }}"></img>
+                        </a>
                     </div>
                 </div>
             </div>
