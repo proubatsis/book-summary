@@ -18,7 +18,8 @@ import com.twitter.util.Future
   */
 class UserController @Inject() (userService: UserService, bookService: BookService) extends Controller {
   get("/login") { req: Request =>
-    LoginView(None, None, None)
+    val to = req.params.getOrElse("to", "/")
+    LoginView(None, None, None, to)
   }
 
   get("/signup") { req: Request =>
@@ -37,7 +38,7 @@ class UserController @Inject() (userService: UserService, bookService: BookServi
   post("/signup") { req: CreateUserRequest =>
     (for {
       _ <- userService.createUserAccount(req.email, req.username, req.password) if req.password.equals(req.confirmPassword)
-    } yield LoginView(None, Some("Account created!"), Some(req.email))) rescue {
+    } yield LoginView(None, Some("Account created!"), Some(req.email), "/")) rescue {
       case _: Throwable => Future.value(SignupView(Some("Error creating this user!")))
     }
   }
@@ -48,8 +49,8 @@ class UserController @Inject() (userService: UserService, bookService: BookServi
     } yield userAccount match {
       case Some((user, account)) => {
         if (BooksumUser.isValidPassword(user, req.password))
-          response.temporaryRedirect.location("/").cookie("access", Token.encodeAccessToken(account))
-        else LoginView(Some("Invalid email or password!"), None, Some(req.email))
+          response.status(303).location(req.to).cookie("access", Token.encodeAccessToken(account))
+        else LoginView(Some("Invalid email or password!"), None, Some(req.email), req.to)
       }
       case None => None
     }

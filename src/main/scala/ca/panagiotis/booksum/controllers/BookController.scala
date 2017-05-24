@@ -1,10 +1,11 @@
 package ca.panagiotis.booksum.controllers
 
+import java.net.URLEncoder
 import javax.inject.Inject
 
 import ca.panagiotis.booksum.controllers.requests.{BookGetRequest, BookSearchRequest, CreateSummaryRequest, RequestUtil}
 import ca.panagiotis.booksum.exceptions.{BookNotFoundException, CreateBookException, CreateSummaryException}
-import ca.panagiotis.booksum.models.{Account, BookData, SearchPaginationModel}
+import ca.panagiotis.booksum.models.{Account, SearchPaginationModel}
 import ca.panagiotis.booksum.services.{BookDataService, BookService}
 import ca.panagiotis.booksum.util.{Endpoint, MarkdownConvert, Token}
 import ca.panagiotis.booksum.views._
@@ -12,6 +13,8 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.response.ResponseBuilder
 import com.twitter.util.Future
+
+import scala.scalajs.niocharset.StandardCharsets
 
 /**
   * Created by panagiotis on 23/04/17.
@@ -146,7 +149,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
   private def authorize(req: Request, response: ResponseBuilder, f: Account => Future[Any]) = {
     RequestUtil.getAuthorizedAccount(req) match {
       case Some(account) => f(account)
-      case None => Future.value(response.temporaryRedirect.location("/login"))
+      case None => Future.value(response.temporaryRedirect.location(s"/login?to=${URLEncoder.encode(req.uri, StandardCharsets.UTF_8.toString)}"))
     }
   }
 

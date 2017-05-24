@@ -7,4 +7,4 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("login")
-case class LoginView(error: Option[String], success: Option[String], email: Option[String])
+case class LoginView(error: Option[String], success: Option[String], email: Option[String], to: String)
