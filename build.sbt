@@ -14,7 +14,5 @@ libraryDependencies ++= Seq(
   "org.planet42" %% "laika-core" % "0.7.0"
 )
 
-assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
-}
+enablePlugins(JavaServerAppPackaging)
+enablePlugins(UniversalPlugin)
