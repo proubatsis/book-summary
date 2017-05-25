@@ -6,7 +6,7 @@ const rename = require("gulp-rename");
 const sass = require("gulp-sass");
 const path = require("path");
 
-const CLIENT_DEST = "client/dest";
+const CLIENT_DEST = "web/assets";
 
 gulp.task("templates", function() {
     return gulp.src("src/main/resources/templates/*.mustache")
@@ -43,3 +43,5 @@ gulp.task("dev", ["templates", "sass", "bootstrap"], function() {
     gulp.watch(["src/main/resources/templates/*.mustache", "client/dev-data/*.json"], ["templates"]);
     gulp.watch("client/sass/*.scss", ["sass"]);
 });
+
+gulp.task("default", ["sass", "bootstrap"]);
