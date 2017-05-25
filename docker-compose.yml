@@ -10,3 +10,8 @@ services:
         build: ./web
         ports:
             - "80:80"
+    app:
+        build: .
+        ports:
+            - "8888:8888"
+            - "9990:9990"
