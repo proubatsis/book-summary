@@ -11,6 +11,7 @@ import io.getquill.{FinaglePostgresContext, SnakeCase}
   */
 object QuillModule extends TwitterModule {
   private val baseConfig = LoadConfig("ctx")
+  private val dbName = sys.env.getOrElse("BOOKSUM_DB", baseConfig.getString("database"))
   private val dbHost = sys.env.getOrElse("BOOKSUM_DB_HOST", baseConfig.getString("host"))
   private val dbUser = sys.env.getOrElse("BOOKSUM_DB_USER", baseConfig.getString("user"))
   private val dbPassword = sys.env.getOrElse("BOOKSUM_DB_PASSWORD", baseConfig.getString("password"))
@@ -19,6 +20,7 @@ object QuillModule extends TwitterModule {
       .withValue("host", ConfigValueFactory.fromAnyRef(dbHost))
       .withValue("user", ConfigValueFactory.fromAnyRef(dbUser))
       .withValue("password", ConfigValueFactory.fromAnyRef(dbPassword))
+      .withValue("database", ConfigValueFactory.fromAnyRef(dbName))
   )
 
 
