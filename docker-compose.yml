@@ -10,10 +10,10 @@ services:
         build: ./web
         ports:
             - "80:80"
-    app:
-        build: .
-        environment:
-          - BOOKSUM_DB_HOST=172.17.0.1:5432
-        ports:
-            - "8888:8888"
-            - "9990:9990"
+#    app:
+#        build: .
+#        environment:
+#          - BOOKSUM_DB_HOST=172.17.0.1:5432
+#        ports:
+#            - "8888:8888"
+#            - "9990:9990"
