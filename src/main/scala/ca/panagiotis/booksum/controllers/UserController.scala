@@ -44,15 +44,17 @@ class UserController @Inject() (userService: UserService, bookService: BookServi
   }
 
   post("/login") { req: LoginRequest =>
+    val invalidLoginView = LoginView(Some("Invalid email or password"), None, Some(req.email), req.to)
+
     for {
       userAccount <- userService.findUserAccountByEmail(req.email)
     } yield userAccount match {
       case Some((user, account)) => {
         if (BooksumUser.isValidPassword(user, req.password))
           response.status(303).location(req.to).cookie("access", Token.encodeAccessToken(account))
-        else LoginView(Some("Invalid email or password!"), None, Some(req.email), req.to)
+        else invalidLoginView
       }
-      case None => None
+      case None => invalidLoginView
     }
   }
 }
