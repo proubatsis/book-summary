@@ -22,8 +22,13 @@ class UserController @Inject() (userService: UserService, bookService: BookServi
   private val ACCESS_TOKEN_COOKIE = "access"
 
   get("/login") { req: Request =>
-    val to = req.params.getOrElse("to", "/")
-    LoginView(None, None, None, to)
+    req.request.account match {
+      case Some(_) =>
+        response.status(Status.SeeOther).location("/")
+      case None =>
+        val to = req.params.getOrElse("to", "/")
+        LoginView(None, None, None, to)
+    }
   }
 
   get("/logout") { _: Request =>
@@ -31,7 +36,10 @@ class UserController @Inject() (userService: UserService, bookService: BookServi
   }
 
   get("/signup") { req: Request =>
-    SignupView(None)
+    req.request.account match {
+      case Some(_) => response.status(Status.SeeOther).location("/")
+      case None => SignupView(None)
+    }
   }
 
   get("/accounts/:id") { req: AccountRequest =>
