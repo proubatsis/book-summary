@@ -8,4 +8,4 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("home")
-case class HomeView(title: String, books: Seq[Book])
+case class HomeView(title: String, books: Seq[Book], navbar: NavbarView) extends PageView

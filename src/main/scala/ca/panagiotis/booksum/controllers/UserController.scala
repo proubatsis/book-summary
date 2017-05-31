@@ -7,10 +7,11 @@ import ca.panagiotis.booksum.controllers.requests.{AccountRequest, CreateUserReq
 import ca.panagiotis.booksum.models.BooksumUser
 import ca.panagiotis.booksum.services.{BookService, UserService}
 import ca.panagiotis.booksum.util.{Endpoint, Token}
-import ca.panagiotis.booksum.views.{LoginView, NotFoundView, SignupView, UserSummaryHistoryView}
+import ca.panagiotis.booksum.views._
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.util.Future
+import ca.panagiotis.booksum.filters.contexts.AccountContext._
 
 
 /**
@@ -30,8 +31,8 @@ class UserController @Inject() (userService: UserService, bookService: BookServi
     for {
       result <- bookService.findAccountSummaryHistory(req.id)
     } yield result match {
-      case Some((account, history)) => UserSummaryHistoryView.fromUserAndSummaries(account.username, history)
-      case None => response.notFound(NotFoundView(s"Account: ${req.id} not found!"))
+      case Some((account, history)) => UserSummaryHistoryView.fromUserAndSummaries(account.username, history, req.request.account)
+      case None => response.notFound(NotFoundView(s"Account: ${req.id} not found!", NavbarView.fromAccountOption(req.request.account)))
     }
   }
 

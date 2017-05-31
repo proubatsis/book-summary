@@ -8,4 +8,11 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("search")
-case class BookSearchView(q: String, search_url: String, books: List[BookItemView], previous: Option[String], next: Option[String])
+case class BookSearchView(
+                           q: String,
+                           search_url: String,
+                           books: List[BookItemView],
+                           previous: Option[String],
+                           next: Option[String],
+                           navbar: NavbarView
+                         ) extends PageView

@@ -1,13 +1,14 @@
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">Book Summary</a>
+            <a class="navbar-brand" href="/">Book Summ</a>
         </div>
 
         <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
             <li><a href="/books/search">Find Summaries</a></li>
             <li><a href="/books/ext/search">New Summaries</a></li>
+            {{#navbar.username}}<li><a href="#">{{.}}</a></li>{{/navbar.username}}
         </ul>
     </div>
 </nav>

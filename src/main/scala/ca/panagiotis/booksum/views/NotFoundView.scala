@@ -7,4 +7,4 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("not_found")
-case class NotFoundView(item: String)
+case class NotFoundView(item: String, navbar: NavbarView) extends PageView
