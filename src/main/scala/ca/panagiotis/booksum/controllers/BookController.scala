@@ -14,13 +14,14 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.http.response.ResponseBuilder
 import com.twitter.util.Future
+import ca.panagiotis.booksum.filters.contexts.AccountContext._
 
 import scala.scalajs.niocharset.StandardCharsets
 
 /**
   * Created by panagiotis on 23/04/17.
   */
-class BookController @Inject() (bookService: BookService, bookDataService: BookDataService, rAccount: Provider[Option[Account]]) extends Controller {
+class BookController @Inject() (bookService: BookService, bookDataService: BookDataService) extends Controller {
   private val BOOK_SEARCH_INDEX = 0
   private val BOOK_SEARCH_MAX_RESULTS = 10
 
@@ -93,7 +94,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
             data <- bookData
             bookId <- bookService.createBook(data.title, data.author, data.description, data.imageUrl)
             _ <- bookService.registerExternalMapping(bookId, request.externalId.head)
-            _ <- bookService.createSummary(bookId, rAccount.get.head.id, MarkdownConvert.toHtml(request.summary))
+            _ <- bookService.createSummary(bookId, request.request.account.head.id, MarkdownConvert.toHtml(request.summary))
           } yield response.found.location(Endpoint.Book.summary(bookId))
         }
         catch {
@@ -130,7 +131,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
         for {
           book <- bookFuture
-          _ <- bookService.createSummary(book.id, rAccount.get.head.id, MarkdownConvert.toHtml(request.summary))
+          _ <- bookService.createSummary(book.id, request.request.account.head.id, MarkdownConvert.toHtml(request.summary))
         } yield response.found.location(Endpoint.Book.summary(book.id))
       }
       catch {
