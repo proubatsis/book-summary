@@ -1,6 +1,7 @@
 package ca.panagiotis.booksum.views
 
 import ca.panagiotis.booksum.models.BookData
+import com.twitter.finagle.http.Request
 import com.twitter.finatra.response.Mustache
 
 /**
@@ -14,5 +15,5 @@ case class BookSearchView(
                            books: List[BookItemView],
                            previous: Option[String],
                            next: Option[String],
-                           navbar: NavbarView
-                         ) extends PageView
+                           req: Request
+                         ) extends PageView(req)

@@ -2,6 +2,7 @@ package ca.panagiotis.booksum.views
 
 import ca.panagiotis.booksum.models.{Account, Book, BookData}
 import ca.panagiotis.booksum.util.Endpoint
+import com.twitter.finagle.http.Request
 import com.twitter.finatra.response.Mustache
 
 /**
@@ -9,14 +10,14 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("book_description")
-case class BookDescriptionView(title: String, author: String, description: String, image: String, new_summary_url: String, navbar: NavbarView) extends PageView
+case class BookDescriptionView(title: String, author: String, description: String, image: String, new_summary_url: String, req: Request) extends PageView(req)
 
 object BookDescriptionView {
-  def fromBookData(bd: BookData, account: Option[Account]): BookDescriptionView = {
-    BookDescriptionView(bd.title, bd.author, bd.description, bd.imageUrl, Endpoint.Book.externalNewSummary(bd.externalId), NavbarView.fromAccountOption(account))
+  def fromBookData(bd: BookData, req: Request): BookDescriptionView = {
+    BookDescriptionView(bd.title, bd.author, bd.description, bd.imageUrl, Endpoint.Book.externalNewSummary(bd.externalId), req)
   }
 
-  def fromBook(b: Book, account: Option[Account]): BookDescriptionView = {
-    BookDescriptionView(b.title, b.author, b.description, b.image, Endpoint.Book.newSummary(b.id), NavbarView.fromAccountOption(account))
+  def fromBook(b: Book, req: Request): BookDescriptionView = {
+    BookDescriptionView(b.title, b.author, b.description, b.image, Endpoint.Book.newSummary(b.id), req)
   }
 }

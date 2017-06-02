@@ -17,7 +17,7 @@ class HomeController @Inject() (bookService: BookService) extends Controller {
   get("/") { req: Request =>
     for {
       books <- bookService.findBooks()
-      view = HomeView("This is my title!", books, NavbarView.fromAccountOption(req.account))
+      view = HomeView("This is my title!", books, req)
     } yield view
   }
 }

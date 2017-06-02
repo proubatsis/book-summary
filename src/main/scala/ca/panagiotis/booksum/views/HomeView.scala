@@ -1,6 +1,7 @@
 package ca.panagiotis.booksum.views
 
 import ca.panagiotis.booksum.models.Book
+import com.twitter.finagle.http.Request
 import com.twitter.finatra.response.Mustache
 
 /**
@@ -8,4 +9,4 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("home")
-case class HomeView(title: String, books: Seq[Book], navbar: NavbarView) extends PageView
+case class HomeView(title: String, books: Seq[Book], req: Request) extends PageView(req)

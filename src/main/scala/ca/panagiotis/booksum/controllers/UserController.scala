@@ -46,8 +46,8 @@ class UserController @Inject() (userService: UserService, bookService: BookServi
     for {
       result <- bookService.findAccountSummaryHistory(req.id)
     } yield result match {
-      case Some((account, history)) => UserSummaryHistoryView.fromUserAndSummaries(account.username, history, req.request.account)
-      case None => response.notFound(NotFoundView(s"Account: ${req.id} not found!", NavbarView.fromAccountOption(req.request.account)))
+      case Some((account, history)) => UserSummaryHistoryView.fromUserAndSummaries(account.username, history, req.request)
+      case None => response.notFound(NotFoundView(s"Account: ${req.id} not found!", req.request))
     }
   }
 

@@ -30,8 +30,8 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
       result <- bookService.findBookSummaryAccount(request.id.head)
     } yield {
       result match {
-        case Some((b, sa)) => BookSummaryView.create(b, sa, request.request.account)
-        case None => response.notFound(NotFoundView(s"Book: ${request.id.head}", NavbarView.fromAccountOption(request.request.account)))
+        case Some((b, sa)) => BookSummaryView.create(b, sa, request.request)
+        case None => response.notFound(NotFoundView(s"Book: ${request.id.head}", request.request))
       }
     }
   }
@@ -41,8 +41,8 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
       result <- bookService.findBook(request.id.head)
     } yield {
       result match {
-        case Some(book) => BookDescriptionView.fromBook(book, request.request.account)
-        case None => response.notFound(NotFoundView(s"Book: ${request.id.head}", NavbarView.fromAccountOption(request.request.account)))
+        case Some(book) => BookDescriptionView.fromBook(book, request.request)
+        case None => response.notFound(NotFoundView(s"Book: ${request.id.head}", request.request))
       }
     }
   }
@@ -53,8 +53,8 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
         result <- bookDataService.getBook(request.externalId.head)
       } yield {
         result match {
-          case Some(bookData) => BookDescriptionView.fromBookData(bookData, request.request.account)
-          case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}", NavbarView.fromAccountOption(request.request.account)))
+          case Some(bookData) => BookDescriptionView.fromBookData(bookData, request.request)
+          case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}", request.request))
         }
       }
     })
@@ -70,8 +70,8 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
           result <- bookDataService.getBook(request.externalId.head)
         } yield {
           result match {
-            case Some(bookData) => NewSummaryView.fromBookData(bookData, request.request.account)
-            case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}", NavbarView.fromAccountOption(request.request.account)))
+            case Some(bookData) => NewSummaryView.fromBookData(bookData, request.request)
+            case None => response.notFound(NotFoundView(s"Book: ${request.externalId.head}", request.request))
           }
         }
       })
@@ -111,7 +111,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
         result <- bookService.findBook(request.id.head)
       } yield {
         result match {
-          case Some(book) => NewSummaryView.fromBook(book, request.request.account)
+          case Some(book) => NewSummaryView.fromBook(book, request.request)
           case None => response.notFound(s"Book: ${request.id.head}")
         }
       }
@@ -148,7 +148,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     }).flatten
   }
 
-  private def searchBook[T](q: String, searchUrl: String, startIndex: Int, maxResults: Int, account: Option[Account], search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = {
+  private def searchBook[T](q: String, searchUrl: String, startIndex: Int, maxResults: Int, req: Request, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = {
     val seekToken = {
       (spm: SearchPaginationModel, f: (Int, Int) => Int) =>
         Token.encodeSearchPagination(SearchPaginationModel(spm.q, f(spm.startIndex, spm.maxResults), spm.maxResults))
@@ -160,19 +160,19 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
     for {
       result <- search(q, startIndex, maxResults)
-    } yield BookSearchView(q, searchUrl, result map toItem, previous map toSearchUrl, next map toSearchUrl, NavbarView.fromAccountOption(account))
+    } yield BookSearchView(q, searchUrl, result map toItem, previous map toSearchUrl, next map toSearchUrl, req)
   }
 
   private def searchRequest[T](searchUrl: String, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = { request: BookSearchRequest =>
-    val emptySearch = BookSearchView("", searchUrl, List(), None, None, NavbarView.fromAccountOption(request.request.account))
+    val emptySearch = BookSearchView("", searchUrl, List(), None, None, request.request)
 
     (request.q, request.t) match {
       case (_, Some(t)) =>
         Token.decodeSearchPagination(t) match {
-          case Some(pagination) => searchBook(pagination.q, searchUrl, pagination.startIndex, pagination.maxResults, request.request.account, search, toItem, toSearchUrl)
+          case Some(pagination) => searchBook(pagination.q, searchUrl, pagination.startIndex, pagination.maxResults, request.request, search, toItem, toSearchUrl)
           case None => emptySearch
         }
-      case (Some(q), _) => searchBook(q, searchUrl, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, request.request.account, search, toItem, toSearchUrl)
+      case (Some(q), _) => searchBook(q, searchUrl, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, request.request, search, toItem, toSearchUrl)
       case _ => emptySearch
     }
   }

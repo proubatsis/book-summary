@@ -1,6 +1,7 @@
 package ca.panagiotis.booksum.views
 
 import ca.panagiotis.booksum.models.{Account, Book, BookData}
+import com.twitter.finagle.http.Request
 import com.twitter.finatra.response.Mustache
 
 /**
@@ -8,11 +9,11 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("new_summary")
-case class NewSummaryView(title: String, author: String, formActionUrl: String, navbar: NavbarView) extends PageView
+case class NewSummaryView(title: String, author: String, formActionUrl: String, req: Request) extends PageView(req)
 
 object NewSummaryView {
-  def fromBookData(bookData: BookData, account: Option[Account]): NewSummaryView =
-    NewSummaryView(bookData.title, bookData.author, s"/books/ext/${bookData.externalId}/summary/new", NavbarView.fromAccountOption(account))
-  def fromBook(book: Book, account: Option[Account]): NewSummaryView =
-    NewSummaryView(book.title, book.author, s"/books/${book.id}/summary/new", NavbarView.fromAccountOption(account))
+  def fromBookData(bookData: BookData, req: Request): NewSummaryView =
+    NewSummaryView(bookData.title, bookData.author, s"/books/ext/${bookData.externalId}/summary/new", req)
+  def fromBook(book: Book, req: Request): NewSummaryView =
+    NewSummaryView(book.title, book.author, s"/books/${book.id}/summary/new", req)
 }
