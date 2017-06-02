@@ -8,7 +8,17 @@
             <li><a href="/">Home</a></li>
             <li><a href="/books/search">Find Summaries</a></li>
             <li><a href="/books/ext/search">New Summaries</a></li>
-            {{#navbar.username}}<li><a href="#">{{.}}</a></li>{{/navbar.username}}
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            {{#navbar.account}}
+            <li><a href="/accounts/{{id}}">{{username}}</a></li>
+            <li><a href="/logout">Logout</a></li>
+            {{/navbar.account}}
+            {{^navbar.account}}
+            <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Signup</a></li>
+            {{/navbar.account}}
         </ul>
     </div>
 </nav>

@@ -11,5 +11,11 @@
       "author": "Terry Goodkind",
       "image": "http://vignette1.wikia.nocookie.net/talismans-tower/images/f/fe/Wizards_first_rule.jpg/revision/latest?cb=20150410222111"
     }
-  ]
+  ],
+  "navbar": {
+      "account": {
+          "id": 5,
+          "username": "proubatsis"
+      }
+  }
 }
