@@ -12,8 +12,8 @@ import scala.util.{Failure, Success, Try}
   * Created by panagiotis on 20/05/17.
   */
 object Token {
-  private val paginationAlgorithm = JwtAlgorithm.HMD5
-  private val paginationSecret = sys.env.getOrElse("BOOKSUM_PAGINATION_SECRET", "JkjHCi3nw8*#W*(YhIUY#@ueshjD(OI#e")
+  private val genericAlgorithm = JwtAlgorithm.HMD5
+  private val genericSecret = sys.env.getOrElse("BOOKSUM_GENERIC_SECRET", "JkjHCi3nw8*#W*(YhIUY#@ueshjD(OI#e")
 
   private val accessAlgorithm = JwtAlgorithm.HS512
   private val accessSecret = sys.env.getOrElse("BOOKSUM_ACCESS_SECRET", "fdeuwni*HF(OIjrkfdkjfhuehr8HF&I$#UHRIEUKfjd")
@@ -25,14 +25,21 @@ object Token {
 
   def encodeSearchPagination(searchPaginationModel: SearchPaginationModel): String = {
     val spmJson = mapper.writeValueAsString(searchPaginationModel)
-    Jwt.encode(spmJson, paginationSecret, paginationAlgorithm)
+    Jwt.encode(spmJson, genericSecret, genericAlgorithm)
   }
 
   def decodeSearchPagination(token: String): Option[SearchPaginationModel] = {
     (for {
-      spmJson <- Jwt.decode(token, paginationSecret, Seq(paginationAlgorithm))
+      spmJson <- Jwt.decode(token, genericSecret, Seq(genericAlgorithm))
       searchPaginationModel <- Try(mapper.readValue[SearchPaginationModel](spmJson))
     } yield searchPaginationModel).toOption
+  }
+
+  def encodeUrl(url: String): String = Jwt.encode(url, genericSecret, genericAlgorithm)
+  def decodeUrl(token: String): Option[String] = {
+    (for {
+      url <- Jwt.decode(token, genericSecret, Seq(genericAlgorithm))
+    } yield url).toOption
   }
 
   def encodeAccessToken(account: Account): String = {

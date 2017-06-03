@@ -23,8 +23,7 @@ object Endpoint {
   }
 
   object Content {
-    def bookImage(id: Int) = s"/content/images/book/$id"
-    def externalBookImage(externalId: String) = s"/content/images/book/ext/$externalId"
+    def image(url: String) = s"/content/images/${Token.encodeUrl(url)}"
   }
 
   def makeUrl(endpoint: String) = s"$host$endpoint"
