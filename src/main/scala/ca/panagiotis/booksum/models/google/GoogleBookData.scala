@@ -7,10 +7,10 @@ case class GoogleBookData(id: String, volumeInfo: GoogleBookDataVolumeInfo)
 
 case class GoogleBookDataVolumeInfo(
                                      title: String,
-                                     description: String,
+                                     description: Option[String],
                                      authors: Option[List[String]],
                                      imageLinks: GoogleBookDataImageLinks,
-                                     industryIdentifiers: List[GoogleBookDataIsbn]
+                                     industryIdentifiers: Option[List[GoogleBookDataIsbn]]
                                    )
 
 case class GoogleBookDataImageLinks(thumbnail: Option[String], small: Option[String], medium: Option[String], large: Option[String])

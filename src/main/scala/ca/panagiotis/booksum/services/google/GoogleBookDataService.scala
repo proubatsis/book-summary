@@ -31,14 +31,15 @@ class GoogleBookDataService extends BookDataService{
 
   private def convertToBookData(b: GoogleBookData): Option[BookData] = {
     for {
-      isbn <- b.volumeInfo.industryIdentifiers find (_.identifier.length() == 13)
+      isbn <- b.volumeInfo.industryIdentifiers flatMap (_ find (_.identifier.length() == 13))
       authors <- b.volumeInfo.authors
+      description <- b.volumeInfo.description
       image <- (List(b.volumeInfo.imageLinks.medium, b.volumeInfo.imageLinks.small, b.volumeInfo.imageLinks.thumbnail) filter (_.isDefined)).head
     } yield BookData(
       b.id,
       b.volumeInfo.title,
       authors.mkString(","),
-      b.volumeInfo.description,
+      description,
       image,
       isbn.identifier
     )
