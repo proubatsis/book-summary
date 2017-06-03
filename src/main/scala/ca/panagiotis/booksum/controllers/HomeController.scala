@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import ca.panagiotis.booksum.models.Book
 import ca.panagiotis.booksum.services.BookService
-import ca.panagiotis.booksum.views.{HomeView, NavbarView}
+import ca.panagiotis.booksum.views.{BookItemView, HomeView, NavbarView}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.util.Future
@@ -17,7 +17,7 @@ class HomeController @Inject() (bookService: BookService) extends Controller {
   get("/") { req: Request =>
     for {
       books <- bookService.findBooks()
-      view = HomeView("This is my title!", books, req)
+      view = HomeView("This is my title!", books map BookItemView.fromBook, req)
     } yield view
   }
 }

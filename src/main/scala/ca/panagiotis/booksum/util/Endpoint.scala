@@ -22,5 +22,10 @@ object Endpoint {
     def summaryHistory(id: Int) = s"/accounts/$id"
   }
 
+  object Content {
+    def bookImage(id: Int) = s"/content/images/book/$id"
+    def externalBookImage(externalId: String) = s"/content/images/book/ext/$externalId"
+  }
+
   def makeUrl(endpoint: String) = s"$host$endpoint"
 }

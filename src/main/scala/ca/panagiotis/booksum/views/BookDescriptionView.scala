@@ -14,10 +14,10 @@ case class BookDescriptionView(title: String, author: String, description: Strin
 
 object BookDescriptionView {
   def fromBookData(bd: BookData, req: Request): BookDescriptionView = {
-    BookDescriptionView(bd.title, bd.author, bd.description, bd.imageUrl, Endpoint.Book.externalNewSummary(bd.externalId), req)
+    BookDescriptionView(bd.title, bd.author, bd.description, Endpoint.Content.externalBookImage(bd.externalId), Endpoint.Book.externalNewSummary(bd.externalId), req)
   }
 
   def fromBook(b: Book, req: Request): BookDescriptionView = {
-    BookDescriptionView(b.title, b.author, b.description, b.image, Endpoint.Book.newSummary(b.id), req)
+    BookDescriptionView(b.title, b.author, b.description, Endpoint.Content.bookImage(b.id), Endpoint.Book.newSummary(b.id), req)
   }
 }

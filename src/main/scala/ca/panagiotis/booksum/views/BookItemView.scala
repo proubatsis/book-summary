@@ -22,7 +22,7 @@ object BookItemView {
       book.title,
       book.author,
       book.description,
-      book.image,
+      Endpoint.Content.bookImage(book.id),
       Some(Endpoint.Book.summary(book.id)),
       Some(Endpoint.Book.description(book.id)),
       Some(Endpoint.Book.newSummary(book.id))
@@ -34,7 +34,7 @@ object BookItemView {
       bookData.title,
       bookData.author,
       bookData.description,
-      bookData.imageUrl,
+      Endpoint.Content.externalBookImage(bookData.externalId),
       None,
       Some(Endpoint.Book.externalDescription(bookData.externalId)),
       Some(Endpoint.Book.externalNewSummary(bookData.externalId))

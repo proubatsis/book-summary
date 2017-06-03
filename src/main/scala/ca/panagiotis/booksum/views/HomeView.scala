@@ -9,4 +9,4 @@ import com.twitter.finatra.response.Mustache
   */
 
 @Mustache("home")
-case class HomeView(title: String, books: Seq[Book], req: Request) extends PageView(req)
+case class HomeView(title: String, books: Seq[BookItemView], req: Request) extends PageView(req)
