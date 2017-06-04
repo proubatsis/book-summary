@@ -4,6 +4,7 @@ const mustache = require("gulp-mustache");
 const tap = require("gulp-tap");
 const rename = require("gulp-rename");
 const sass = require("gulp-sass");
+const browserify = require("gulp-browserify");
 const path = require("path");
 
 const CLIENT_DEST = "web/assets";
@@ -34,7 +35,13 @@ gulp.task("bootstrap", function() {
         .pipe(gulp.dest(path.join(CLIENT_DEST, "styles")));
 });
 
-gulp.task("dev", ["templates", "sass", "bootstrap"], function() {
+gulp.task("scripts", function() {
+    return gulp.src("client/scripts/*.js")
+        .pipe(browserify())
+        .pipe(gulp.dest(path.join(CLIENT_DEST, "scripts")));
+});
+
+gulp.task("dev", ["templates", "sass", "bootstrap", "scripts"], function() {
     connect.server({
         root: CLIENT_DEST,
         livereload: true
@@ -42,6 +49,7 @@ gulp.task("dev", ["templates", "sass", "bootstrap"], function() {
 
     gulp.watch(["src/main/resources/templates/*.mustache", "client/dev-data/*.json"], ["templates"]);
     gulp.watch("client/sass/*.scss", ["sass"]);
+    gulp.watch("client/scripts/*.js", ["scripts"])
 });
 
-gulp.task("default", ["sass", "bootstrap"]);
+gulp.task("default", ["sass", "bootstrap", "scripts"]);
