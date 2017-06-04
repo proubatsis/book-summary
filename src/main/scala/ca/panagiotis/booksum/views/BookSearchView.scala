@@ -17,3 +17,10 @@ case class BookSearchView(
                            next: Option[String],
                            req: Request
                          ) extends PageView(req)
+
+@Mustache("search_results")
+case class PartialBookSearchView(
+                                  books: List[BookItemView],
+                                  previous: Option[String],
+                                  next: Option[String]
+                                )

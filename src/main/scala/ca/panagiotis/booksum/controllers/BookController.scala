@@ -148,7 +148,7 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
     }).flatten
   }
 
-  private def searchBook[T](q: String, searchUrl: String, startIndex: Int, maxResults: Int, req: Request, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = {
+  private def searchBook[T](q: String, searchUrl: String, startIndex: Int, maxResults: Int, isAjax: Boolean, req: Request, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = {
     val seekToken = {
       (spm: SearchPaginationModel, f: (Int, Int) => Int) =>
         Token.encodeSearchPagination(SearchPaginationModel(spm.q, f(spm.startIndex, spm.maxResults), spm.maxResults))
@@ -160,19 +160,25 @@ class BookController @Inject() (bookService: BookService, bookDataService: BookD
 
     for {
       result <- search(q, startIndex, maxResults)
-    } yield BookSearchView(q, searchUrl, result map toItem, previous map toSearchUrl, next map toSearchUrl, req)
+    } yield {
+      if(isAjax)
+        PartialBookSearchView(result map toItem, previous map toSearchUrl, next map toSearchUrl)
+      else
+        BookSearchView(q, searchUrl, result map toItem, previous map toSearchUrl, next map toSearchUrl, req)
+    }
   }
 
   private def searchRequest[T](searchUrl: String, search: (String, Int, Int) => Future[List[T]], toItem: T => BookItemView, toSearchUrl: String => String) = { request: BookSearchRequest =>
     val emptySearch = BookSearchView("", searchUrl, List(), None, None, request.request)
+    val isAjax = request.ajax.getOrElse(false)
 
     (request.q, request.t) match {
       case (_, Some(t)) =>
         Token.decodeSearchPagination(t) match {
-          case Some(pagination) => searchBook(pagination.q, searchUrl, pagination.startIndex, pagination.maxResults, request.request, search, toItem, toSearchUrl)
+          case Some(pagination) => searchBook(pagination.q, searchUrl, pagination.startIndex, pagination.maxResults, isAjax, request.request, search, toItem, toSearchUrl)
           case None => emptySearch
         }
-      case (Some(q), _) => searchBook(q, searchUrl, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, request.request, search, toItem, toSearchUrl)
+      case (Some(q), _) => searchBook(q, searchUrl, BOOK_SEARCH_INDEX, BOOK_SEARCH_MAX_RESULTS, isAjax, request.request, search, toItem, toSearchUrl)
       case _ => emptySearch
     }
   }
