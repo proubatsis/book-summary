@@ -1,4 +1,11 @@
 var $ = require("jquery");
+var RESULTS = "#results";
+
+var historyPush = history.pushState;
+
+var getState = function() {
+    return $(RESULTS).html();
+};
 
 var toAjax = function(url) {
     return url + "&ajax=true";
@@ -17,15 +24,17 @@ var updatePage = function(url) {
     $.get(toAjax(url), function(data, status) {
         $(".modal").removeClass("loading");
         if(status === "success") {
-            $(results).empty();
-            $(results).append($(data));
+            historyPush(data, null, url);
+
+            $(RESULTS).empty();
+            $(RESULTS).append($(data));
             paginationHandler();
         }
     });
 };
 
 $(document).ready(function() {
-    var results = $("#results");
+    historyPush(getState(), null, location.path);
 
     $("#searchForm").submit(function() {
         var endpoint = $(this).attr("action");
@@ -37,6 +46,13 @@ $(document).ready(function() {
         }
 
         return false;
+    });
+
+    $(window).on("popstate", function(e) {
+        var state = e.originalEvent.state;
+        $(RESULTS).empty();
+        $(RESULTS).append($(state));
+        paginationHandler();
     });
 
     paginationHandler();
