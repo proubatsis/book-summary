@@ -1,8 +1,6 @@
 var $ = require("jquery");
 var RESULTS = "#results";
 
-var historyPush = history.pushState;
-
 var getState = function() {
     return $(RESULTS).html();
 };
@@ -24,7 +22,7 @@ var updatePage = function(url) {
     $.get(toAjax(url), function(data, status) {
         $(".modal").removeClass("loading");
         if(status === "success") {
-            historyPush(data, null, url);
+            history.pushState(data, null, url);
 
             $(RESULTS).empty();
             $(RESULTS).append($(data));
@@ -34,7 +32,7 @@ var updatePage = function(url) {
 };
 
 $(document).ready(function() {
-    historyPush(getState(), null, location.path);
+    history.pushState(getState(), null, location.path);
 
     $("#searchForm").submit(function() {
         var endpoint = $(this).attr("action");
