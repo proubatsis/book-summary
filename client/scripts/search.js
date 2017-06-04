@@ -13,7 +13,9 @@ var paginationHandler = function() {
 };
 
 var updatePage = function(url) {
+    $(".modal").addClass("loading");
     $.get(toAjax(url), function(data, status) {
+        $(".modal").removeClass("loading");
         if(status === "success") {
             $(results).empty();
             $(results).append($(data));
