@@ -5,6 +5,7 @@ const tap = require("gulp-tap");
 const rename = require("gulp-rename");
 const sass = require("gulp-sass");
 const browserify = require("gulp-browserify");
+const uglify = require("gulp-uglify");
 const path = require("path");
 
 const CLIENT_DEST = "web/assets";
@@ -38,6 +39,7 @@ gulp.task("bootstrap", function() {
 gulp.task("scripts", function() {
     return gulp.src("client/scripts/*.js")
         .pipe(browserify())
+        .pipe(uglify())
         .pipe(gulp.dest(path.join(CLIENT_DEST, "scripts")));
 });
 
